@@ -5,6 +5,8 @@
 
 #include <list>
 #include "ThreeAd.cpp"
+#include<iostream>
+#include<sstream>
 
 using namespace std;
 class BBlock
