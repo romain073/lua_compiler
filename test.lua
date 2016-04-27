@@ -1,4 +1,6 @@
-print "enter a number:"
-n = io.read("*number")
-n = n+1
-print(n)
+a = 1
+b = a
+c = a/b
+d = a+b
+e = a-b
+f = a*b
