@@ -4,6 +4,8 @@
 %define api.token.constructor
 %code requires{
     #include "headers/Node.cpp"
+    #include "headers/ThreeAd.cpp"
+    #include "headers/BBlock.cpp"
 }
 
 %code{
