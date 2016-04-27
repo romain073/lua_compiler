@@ -17,15 +17,6 @@ void yy::parser::error(string const&err)
 
 int main(int argc, char **argv)
 {
-  Statement * r = new Statement();
-  Sequence* s = new Sequence();
-  s->add(new Assign({new Variable("test1"),new Variable("test2")}, {new Variable("test2"),new Variable("test1")}));
-  //s->add(new Assign("test", new Variable("abc")));
-  r->children.push_back(s);
-  r->dump();
-
-  
-  
   yy::parser parser;
   if(argc != 2){
     cout << "Usage: ./int program.lua" << endl;
