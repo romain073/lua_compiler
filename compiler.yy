@@ -11,6 +11,7 @@
     #include "headers/Variable.cpp"
     #include "headers/BinOp.cpp"
     #include "headers/If.cpp"
+    #include "headers/While.cpp"
 }
 
 %code{
@@ -136,7 +137,7 @@ laststatement   : RETURN optexplist             {$$=(new Node("return"))->add($2
 statement   : varlist EQUAL explist             {$$=new Assign($1, $3);}
             | functioncall                      {/* $$=$1; */}
             | DO block END                      {/* $$=(new Node("do end"))->add($2); */}
-            | WHILE exp DO block END            {/* $$=(new Node("while"))->add($2)->add($4); */}
+            | WHILE exp DO block END            { $$=new While($2, $4); }
             | REPEAT block UNTIL exp            {/* $$=(new Node("repeat"))->add($2)->add($4); */}
             | IF exp THEN block elseif else END { $$=new If($2,$4,$6, $5);
             /* $$=(new Node("if"))->add($2)->add($4)->add($5)->add((new Node("else"))->add($6)); */}
