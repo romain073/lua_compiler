@@ -4,15 +4,19 @@
 %define api.token.constructor
 %code requires{
     #include "headers/Node.cpp"
-    #include "headers/ThreeAd.cpp"
-    #include "headers/BBlock.cpp"
+    #include "headers/Statement.cpp"
+    #include "headers/Sequence.cpp"
+    #include "headers/Assign.cpp"
+    #include "headers/Constant.cpp"
+    #include "headers/Variable.cpp"
+    #include "headers/BinOp.cpp"
 }
 
 %code{
   #include <string>
   #define YY_DECL yy::parser::symbol_type yylex()
   YY_DECL;
-  Node* root;
+  Statement* root;
 }
 %token <std::string> NUMBER
 %token <std::string> SEMICOLON
@@ -77,17 +81,17 @@
 %left MULTIPLY DIVIDE MODULO POW DOTDOT
 %right UNARY
 
-%type <Node*> block
-%type <Node*> statements
+%type <Statement*> block
+%type <Sequence*> statements
 %type <Node*> opt_laststatement
-%type <Node*> statement
+%type <Statement*> statement
 %type <Node*> laststatement
 %type <Node*> optexplist
-%type <Node*> varlist
-%type <Node*> explist
-%type <Node*> var
-%type <Node*> exp
-%type <Node*> prefixexp
+%type <vector<Expression*>> varlist
+%type <vector<Expression*>> explist
+%type <Expression*> var
+%type <Expression*> exp
+%type <Expression*> prefixexp
 %type <Node*> functioncall
 %type <Node*> function
 %type <Node*> args
@@ -115,10 +119,10 @@
 
 root : block                                    {root=$1;}
 
-block   : statements opt_laststatement          {$$=(new Node("Block"))->add($1)->add($2);}
+block   : statements opt_laststatement          {$$=$1;/* TODO add optlast*/}
 
-statements : /* empty */                        {$$=new Node("Statements");}
-        | statements statement opt_semicolon    {$$=$1->add($2);}
+statements : /* empty */                        {$$=new Sequence();}
+        | statements statement opt_semicolon    {$$=$1; $$->add($2);}
         
 opt_laststatement: /* empty */                  {$$=new Node("pass");}
                 | laststatement opt_semicolon   {$$=$1;}
@@ -128,124 +132,124 @@ laststatement   : RETURN optexplist             {$$=(new Node("return"))->add($2
         
 
 
-statement   : varlist EQUAL explist             {$$=(new Node("affectation"))->add($1)->add($3);}
-            | functioncall                      {$$=$1;}
-            | DO block END                      {$$=(new Node("do end"))->add($2);}
-            | WHILE exp DO block END            {$$=(new Node("while"))->add($2)->add($4);}
-            | REPEAT block UNTIL exp            {$$=(new Node("repeat"))->add($2)->add($4);}
-            | IF exp THEN block elseif else END {$$=(new Node("if"))->add($2)->add($4)->add($5)->add((new Node("else"))->add($6));}
-            | FOR NAME EQUAL exp COMMA exp optcommaexp DO block END     {$$=(new Node("forequal"))->add((new Node("name", $2)))->add($4)->add($6)->add($7)->add($9);}
-            | FOR namelist IN explist DO block END      {$$=((new Node("forin")))->add($2)->add($4)->add($6);}
-            | FUNCTION funcname funcbody        {$$=(new Node("functiondef"))->add($2)->add($3);}
-            | LOCAL FUNCTION NAME funcbody      {$$=(new Node("localfunctiondef", $3))->add($4);}
-            | LOCAL namelist eqexplistopt       {$$=(new Node("local decl/aff"))->add($2)->add($3);}
+statement   : varlist EQUAL explist             {$$=new Assign($1, $3);}
+            | functioncall                      {/* $$=$1; */}
+            | DO block END                      {/* $$=(new Node("do end"))->add($2); */}
+            | WHILE exp DO block END            {/* $$=(new Node("while"))->add($2)->add($4); */}
+            | REPEAT block UNTIL exp            {/* $$=(new Node("repeat"))->add($2)->add($4); */}
+            | IF exp THEN block elseif else END {/* $$=(new Node("if"))->add($2)->add($4)->add($5)->add((new Node("else"))->add($6)); */}
+            | FOR NAME EQUAL exp COMMA exp optcommaexp DO block END     {/* $$=(new Node("forequal"))->add((new Node("name", $2)))->add($4)->add($6)->add($7)->add($9); */}
+            | FOR namelist IN explist DO block END      {/* $$=((new Node("forin")))->add($2)->add($4)->add($6); */}
+            | FUNCTION funcname funcbody        {/* $$=(new Node("functiondef"))->add($2)->add($3); */}
+            | LOCAL FUNCTION NAME funcbody      {/* $$=(new Node("localfunctiondef", $3))->add($4); */}
+            | LOCAL namelist eqexplistopt       {/* $$=(new Node("local decl/aff"))->add($2)->add($3); */}
 
-eqexplistopt: /* empty */                       {$$=new Node("pass");}
-            | EQUAL explist                     {$$=$2;}
+eqexplistopt: /* empty */                       {/* $$=new Node("pass"); */}
+            | EQUAL explist                     {/* $$=$2; */}
 
-funcname : funcnamebase optcolonname            {$$ = (new Node("funcname"))->add($1)->add($2);}
+funcname : funcnamebase optcolonname            {/* $$ = (new Node("funcname"))->add($1)->add($2); */}
 
-funcnamebase : NAME                             {$$=new Node("fnname", $1);}
-	    | funcnamebase DOT NAME                 {$$=$1;$$->value = $$->value + "." + $3;}
+funcnamebase : NAME                             {/* $$=new Node("fnname", $1); */}
+	    | funcnamebase DOT NAME                 {/* $$=$1;$$->value = $$->value + "." + $3; */}
 	    
-optcolonname: /* empty */                       {$$=new Node("pass");}
-            | COLON NAME                        {$$=new Node("fname",$2);}
+optcolonname: /* empty */                       {/* $$=new Node("pass"); */}
+            | COLON NAME                        {/* $$=new Node("fname",$2); */}
 
-funcbody: POPEN optparlist PCLOSE block END     {$$=(new Node("fnbody"))->add($2)->add($4);}
+funcbody: POPEN optparlist PCLOSE block END     {/* $$=(new Node("fnbody"))->add($2)->add($4); */}
 
-optparlist:  /* empty */                        {$$=new Node("pass");}
-        | parlist                               {$$=$1;}
+optparlist:  /* empty */                        {/* $$=new Node("pass"); */}
+        | parlist                               {/* $$=$1; */}
 
 
-optcommaexp  : /* empty */                      {$$=new Node("pass");}
-        | COMMA exp                             {$$=$2;}
+optcommaexp  : /* empty */                      {/* $$=new Node("pass"); */}
+        | COMMA exp                             {/* $$=$2; */}
 
  
-elseif  : /* empty */                           {$$=new Node("elseif");}
-        | elseif ELSEIF exp THEN block          {$$=$1->add($3)->add($5);}
+elseif  : /* empty */                           {/* $$=new Node("elseif"); */}
+        | elseif ELSEIF exp THEN block          {/* $$=$1->add($3)->add($5); */}
 
-else: /* empty */                               {$$=new Node("pass");}
-    | ELSE block                                {$$=$2;}
+else: /* empty */                               {/* $$=new Node("pass"); */}
+    | ELSE block                                {/* $$=$2; */}
 
-var : NAME                                      {$$=new Node("Var", $1);}
-    | prefixexp SBRACKETOPEN exp SBRACKETCLOSE  {$$=(new Node("tableretrieve"))->add($1)->add($3);}
-    | prefixexp DOT NAME                        {$$=(new Node("propretrieve"))->add($1)->add(new Node("Var", $3));}
+var : NAME                                      {$$=new Variable($1);}
+    | prefixexp SBRACKETOPEN exp SBRACKETCLOSE  {/* $$=(new Node("tableretrieve"))->add($1)->add($3); */}
+    | prefixexp DOT NAME                        {/* $$=(new Node("propretrieve"))->add($1)->add(new Node("Var", $3)); */}
 
-varlist : var                                   {$$=(new Node("varlist"))->add($1);}
-        | varlist COMMA var                     {$$=$1->add($3);}
+varlist : var                                   {$$.push_back($1);}
+        | varlist COMMA var                     {$$=$1;$$.push_back($3);}
         
-exp : TRUE                      {$$=new Node("value", "true");}
-    | FALSE                     {$$=new Node("value", "false");}
-    | NIL                       {$$=new Node("value", "nil");}
-    | NUMBER                    {$$=new Node("number", $1);}
-    | str                       {$$=$1;}  
-    | DOTDOTDOT                 {$$=new Node("DOTDOTDOT", $1);}
-    | prefixexp                 {$$=$1;}
-    | function                  {$$=$1;}
-    | tableconstructor          {$$=$1;}
-    | MINUS exp %prec UNARY     {$$=(new Node($1, ""))->add($2);}
-    | NOT exp %prec UNARY       {$$=(new Node($1, ""))->add($2);}
-    | HASH exp %prec UNARY      {$$=(new Node($1, ""))->add($2);}
-    | exp PLUS exp              {$$=(new Node($2, ""))->add($1)->add($3);}
-    | exp MULTIPLY exp          {$$=(new Node($2, ""))->add($1)->add($3);}
-    | exp MINUS exp             {$$=(new Node($2, ""))->add($1)->add($3);}
-    | exp DIVIDE exp            {$$=(new Node($2, ""))->add($1)->add($3);}
-    | exp POW exp               {$$=(new Node($2, ""))->add($1)->add($3);}
-    | exp MODULO exp            {$$=(new Node($2, ""))->add($1)->add($3);}
-    | exp LT exp                {$$=(new Node($2, ""))->add($1)->add($3);}
-    | exp LTE exp               {$$=(new Node($2, ""))->add($1)->add($3);}
-    | exp GT exp                {$$=(new Node($2, ""))->add($1)->add($3);}
-    | exp GTE exp               {$$=(new Node($2, ""))->add($1)->add($3);}
-    | exp EQ exp                {$$=(new Node($2, ""))->add($1)->add($3);}
-    | exp NE exp                {$$=(new Node($2, ""))->add($1)->add($3);}
-    | exp AND exp               {$$=(new Node($2, ""))->add($1)->add($3);}
-    | exp OR exp                {$$=(new Node($2, ""))->add($1)->add($3);}
-    | exp DOTDOT exp            {$$=(new Node($2, ""))->add($1)->add($3);}
+exp : TRUE                      {/* $$=new Node("value", "true"); */}
+    | FALSE                     {/* $$=new Node("value", "false"); */}
+    | NIL                       {/* $$=new Node("value", "nil"); */}
+    | NUMBER                    { $$=new Constant($1); }
+    | str                       {/* $$=$1; */}  
+    | DOTDOTDOT                 {/* $$=new Node("DOTDOTDOT", $1); */}
+    | prefixexp                 { $$=$1; }
+    | function                  {/* $$=$1; */}
+    | tableconstructor          {/* $$=$1; */}
+    | MINUS exp %prec UNARY     {/* $$=(new Node($1, ""))->add($2); */}
+    | NOT exp %prec UNARY       {/* $$=(new Node($1, ""))->add($2); */}
+    | HASH exp %prec UNARY      {/* $$=(new Node($1, ""))->add($2); */}
+    | exp PLUS exp              { $$=new BinOp($1, $3, '+'); }
+    | exp MULTIPLY exp          { $$=new BinOp($1, $3, '*'); }
+    | exp MINUS exp             { $$=new BinOp($1, $3, '-'); }
+    | exp DIVIDE exp            { $$=new BinOp($1, $3, '/'); }
+    | exp POW exp               {/* $$=(new Node($2, ""))->add($1)->add($3); */}
+    | exp MODULO exp            {/* $$=(new Node($2, ""))->add($1)->add($3); */}
+    | exp LT exp                {/* $$=(new Node($2, ""))->add($1)->add($3); */}
+    | exp LTE exp               {/* $$=(new Node($2, ""))->add($1)->add($3); */}
+    | exp GT exp                {/* $$=(new Node($2, ""))->add($1)->add($3); */}
+    | exp GTE exp               {/* $$=(new Node($2, ""))->add($1)->add($3); */}
+    | exp EQ exp                {/* $$=(new Node($2, ""))->add($1)->add($3); */}
+    | exp NE exp                {/* $$=(new Node($2, ""))->add($1)->add($3); */}
+    | exp AND exp               {/* $$=(new Node($2, ""))->add($1)->add($3); */}
+    | exp OR exp                {/* $$=(new Node($2, ""))->add($1)->add($3); */}
+    | exp DOTDOT exp            {/* $$=(new Node($2, ""))->add($1)->add($3); */}
     
-function : FUNCTION funcbody            {$$=(new Node("anonfunc"))->add($2);}
+function : FUNCTION funcbody            {/* $$=(new Node("anonfunc"))->add($2); */}
 
-parlist : namelist                      {$$=(new Node("parlist"))->add($1);}
-        | namelist COMMA DOTDOTDOT      {$$=(new Node("parlist", $3))->add($1);}
-        | DOTDOTDOT                     {$$=new Node("parlist", $1);}
+parlist : namelist                      {/* $$=(new Node("parlist"))->add($1); */}
+        | namelist COMMA DOTDOTDOT      {/* $$=(new Node("parlist", $3))->add($1); */}
+        | DOTDOTDOT                     {/* $$=new Node("parlist", $1); */}
         
 
-namelist: NAME                          {$$=(new Node("namelist"))->add(new Node("name", $1));}
-        | namelist COMMA NAME           {$$=$1->add(new Node("name", $3));}
+namelist: NAME                          {/* $$=(new Node("namelist"))->add(new Node("name", $1)); */}
+        | namelist COMMA NAME           {/* $$=$1->add(new Node("name", $3)); */}
 
-explist : exp {$$=(new Node("Explist"))->add($1);}
-        | explist COMMA exp {$$=$1->add($3);}
+explist : exp {$$.push_back($1);}
+        | explist COMMA exp {$$=$1; $$.push_back($3); }
 
-prefixexp   : var                       {$$=$1;}
-            | functioncall              {$$=$1;}
-            | POPEN exp PCLOSE          {$$=$2;}
+prefixexp   : var                       { $$=$1; }
+            | functioncall              {/* $$=$1; */}
+            | POPEN exp PCLOSE          {/* $$=$2; */}
             
-functioncall: prefixexp args            {$$=(new Node("functioncall"))->add($1)->add($2);}
-            | prefixexp COLON NAME args {$$=(new Node("functioncall"))->add($1)->add(new Node("name",$3))->add($4);}
+functioncall: prefixexp args            {/* $$=(new Node("functioncall"))->add($1)->add($2); */}
+            | prefixexp COLON NAME args {/* $$=(new Node("functioncall"))->add($1)->add(new Node("name",$3))->add($4); */}
                 
-args: POPEN optexplist PCLOSE           {$$=(new Node("args"))->add($2);}
-    | tableconstructor                  {$$=(new Node("tableargs"))->add($1);}
-    | str                            {$$=(new Node("str_arg"))->add($1);}
+args: POPEN optexplist PCLOSE           {/* $$=(new Node("args"))->add($2); */}
+    | tableconstructor                  {/* $$=(new Node("tableargs"))->add($1); */}
+    | str                            {/* $$=(new Node("str_arg"))->add($1); */}
 
-str: STRING                             {$$=new Node("string", $1.erase($1.length()-1,1).erase(0,1));}
+str: STRING                             {/* $$=new Node("string", $1.erase($1.length()-1,1).erase(0,1)); */}
 
-optexplist  : /* empty */               {$$=new Node("pass");}
-            | explist                   {$$=$1;}
+optexplist  : /* empty */               {/* $$=new Node("pass"); */}
+            | explist                   {/* $$=$1; */}
 
 				
-tableconstructor : CBRACKETOPEN optfieldlist CBRACKETCLOSE {$$=(new Node("tableconstructor"))->add($2);}
+tableconstructor : CBRACKETOPEN optfieldlist CBRACKETCLOSE {/* $$=(new Node("tableconstructor"))->add($2); */}
 
-optfieldlist    : /* empty */                       {$$=new Node("pass");}
-                | fieldlist optfieldsep             {$$=$1;}
+optfieldlist    : /* empty */                       {/* $$=new Node("pass"); */}
+                | fieldlist optfieldsep             {/* $$=$1; */}
                 
 optfieldsep    : /* empty */ 
                 | fieldsep 
                 
-fieldlist   : field                                 {$$=(new Node("fieldlist"))->add($1);}
-            | fieldlist fieldsep field              {$$=$1->add($3);}
+fieldlist   : field                                 {/* $$=(new Node("fieldlist"))->add($1); */}
+            | fieldlist fieldsep field              {/* $$=$1->add($3); */}
 
-field   : SBRACKETOPEN exp SBRACKETCLOSE EQUAL exp  {$$=(new Node("brackets"))->add($2)->add($5);}
-        | NAME EQUAL exp                            {$$=(new Node("name", $1))->add($3);}
-        | exp                                       {$$=(new Node("simple"))->add($1);}
+field   : SBRACKETOPEN exp SBRACKETCLOSE EQUAL exp  {/* $$=(new Node("brackets"))->add($2)->add($5); */}
+        | NAME EQUAL exp                            {/* $$=(new Node("name", $1))->add($3); */}
+        | exp                                       {/* $$=(new Node("simple"))->add($1); */}
 
 fieldsep    : COMMA 
             | SEMICOLON 

@@ -1,9 +1,14 @@
 #include<iostream>
 #include "compiler.tab.hh"
 #include "headers/Node.cpp"
+#include "headers/Statement.cpp"
+#include "headers/Sequence.cpp"
+#include "headers/Assign.cpp"
+#include "headers/Constant.cpp"
+#include "headers/Variable.cpp"
 #include <fstream>
 #include <string.h>
-extern Node* root;
+extern Statement* root;
 extern FILE *yyin;
 void yy::parser::error(string const&err)
 {
@@ -12,6 +17,15 @@ void yy::parser::error(string const&err)
 
 int main(int argc, char **argv)
 {
+  Statement * r = new Statement();
+  Sequence* s = new Sequence();
+  s->add(new Assign({new Variable("test1"),new Variable("test2")}, {new Variable("test2"),new Variable("test1")}));
+  //s->add(new Assign("test", new Variable("abc")));
+  r->children.push_back(s);
+  r->dump();
+
+  
+  
   yy::parser parser;
   if(argc != 2){
     cout << "Usage: ./int program.lua" << endl;
@@ -24,15 +38,15 @@ int main(int argc, char **argv)
   }
   
   if(!parser.parse()){
-    //root->dump();
-    ofstream myfile;
+    root->dump();
+    /*ofstream myfile;
     myfile.open("tree.dot");
     int id = 0;
     myfile << "digraph {" << endl;
     root->dumpToFile(myfile, id);
     myfile << "}" << endl;
     myfile.close();
-    delete root;
+    delete root;*/
     return 0;
   }
   return 1;
