@@ -24,6 +24,16 @@ class Assign: public Statement
         }
         cout << endl;
     }
+    
+    void convert(BBlock** current){
+        for(size_t i = 0; i<this->variables.size(); i++){
+            string name = this->variables[i]->convert(current);
+            string val = this->values[i]->convert(current);
+          ThreeAd a(name, 'c', val, val);
+        (*current)->instructions.push_back(a);
+        }
+    }
+
 };
 
 #endif

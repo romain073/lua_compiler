@@ -6,6 +6,7 @@
 #include "headers/Assign.cpp"
 #include "headers/Constant.cpp"
 #include "headers/Variable.cpp"
+#include "headers/BBlock.cpp"
 #include <fstream>
 #include <string.h>
 extern Statement* root;
@@ -15,6 +16,7 @@ void yy::parser::error(string const&err)
   cout << "Parse error... " << err << endl;
 }
 
+int Expression::nameCounter = 0;
 int main(int argc, char **argv)
 {
   yy::parser parser;
@@ -30,6 +32,15 @@ int main(int argc, char **argv)
   
   if(!parser.parse()){
     root->dump();
+    
+    BBlock *start = new BBlock();
+    BBlock *current = start;
+    
+    root->convert(&current);
+    current->dumpCFG();
+      
+    
+    
     /*ofstream myfile;
     myfile.open("tree.dot");
     int id = 0;

@@ -10,6 +10,7 @@
     #include "headers/Constant.cpp"
     #include "headers/Variable.cpp"
     #include "headers/BinOp.cpp"
+    #include "headers/If.cpp"
 }
 
 %code{
@@ -81,7 +82,7 @@
 %left MULTIPLY DIVIDE MODULO POW DOTDOT
 %right UNARY
 
-%type <Statement*> block
+%type <Sequence*> block
 %type <Sequence*> statements
 %type <Node*> opt_laststatement
 %type <Statement*> statement
@@ -95,7 +96,7 @@
 %type <Node*> functioncall
 %type <Node*> function
 %type <Node*> args
-%type <Node*> else
+%type <Sequence*> else
 %type <Node*> elseif
 %type <Node*> optcommaexp
 %type <Node*> namelist
@@ -137,7 +138,8 @@ statement   : varlist EQUAL explist             {$$=new Assign($1, $3);}
             | DO block END                      {/* $$=(new Node("do end"))->add($2); */}
             | WHILE exp DO block END            {/* $$=(new Node("while"))->add($2)->add($4); */}
             | REPEAT block UNTIL exp            {/* $$=(new Node("repeat"))->add($2)->add($4); */}
-            | IF exp THEN block elseif else END {/* $$=(new Node("if"))->add($2)->add($4)->add($5)->add((new Node("else"))->add($6)); */}
+            | IF exp THEN block elseif else END { $$=new If($2,$4,$6);
+            /* $$=(new Node("if"))->add($2)->add($4)->add($5)->add((new Node("else"))->add($6)); */}
             | FOR NAME EQUAL exp COMMA exp optcommaexp DO block END     {/* $$=(new Node("forequal"))->add((new Node("name", $2)))->add($4)->add($6)->add($7)->add($9); */}
             | FOR namelist IN explist DO block END      {/* $$=((new Node("forin")))->add($2)->add($4)->add($6); */}
             | FUNCTION funcname funcbody        {/* $$=(new Node("functiondef"))->add($2)->add($3); */}
@@ -168,8 +170,8 @@ optcommaexp  : /* empty */                      {/* $$=new Node("pass"); */}
 elseif  : /* empty */                           {/* $$=new Node("elseif"); */}
         | elseif ELSEIF exp THEN block          {/* $$=$1->add($3)->add($5); */}
 
-else: /* empty */                               {/* $$=new Node("pass"); */}
-    | ELSE block                                {/* $$=$2; */}
+else: /* empty */                               { $$=NULL;}
+    | ELSE block                                { $$=$2; }
 
 var : NAME                                      {$$=new Variable($1);}
     | prefixexp SBRACKETOPEN exp SBRACKETCLOSE  {/* $$=(new Node("tableretrieve"))->add($1)->add($3); */}

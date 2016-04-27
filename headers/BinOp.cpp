@@ -17,6 +17,17 @@ char op;
       right->toString();
     
   }
+  
+  void namePass(map<Expression*,string> &naming){
+        naming[this] = newName();
+        this->left->namePass(naming);
+        this->right->namePass(naming);
+    }
+    
+ void emitPass(map<Expression*,string> &naming, BBlock** out){
+    ThreeAd a(naming[this], op, naming[this->left], naming[this->right]);
+    (*out)->instructions.push_back(a);
+  }
 };
 
 #endif

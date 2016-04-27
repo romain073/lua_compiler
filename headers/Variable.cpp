@@ -13,6 +13,12 @@ string val;
   void toString(){
       cout << "(Variable)'" <<val <<"'";
   }
+      
+    void namePass(map<Expression*,string> &naming){
+        naming[this] = this->val;
+    }
+    
+    void emitPass(map<Expression*,string> &naming, BBlock** out){  }
 };
 
 #endif

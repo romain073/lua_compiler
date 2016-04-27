@@ -7,6 +7,7 @@
 #include "ThreeAd.cpp"
 #include<iostream>
 #include<sstream>
+#include<set>
 
 using namespace std;
 class BBlock
@@ -38,6 +39,27 @@ BBlock *trueExit, *falseExit;
     cout << "jmp _block" << falseExit << endl;
     }
   }
+  
+  void dumpCFG()
+{
+set<BBlock *> done, todo;
+  todo.insert(this);
+  while(todo.size()>0)
+  {
+    // Pop an arbitrary element from todo set
+    auto first = todo.begin();
+    BBlock *next = *first;
+    todo.erase(first);
+
+    next->dump();
+    done.insert(next);
+    if(next->trueExit!=NULL && done.find(next->trueExit)==done.end())
+      todo.insert(next->trueExit);
+    if(next->falseExit!=NULL && done.find(next->falseExit)==done.end())
+      todo.insert(next->falseExit);
+  }
+}
+  
   
 };
 #endif

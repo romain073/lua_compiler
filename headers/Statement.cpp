@@ -2,6 +2,7 @@
 #define STATEMENT_H
 #include<vector>
 #include "Expression.cpp"
+#include "BBlock.cpp"
 
 class Statement
 {
@@ -27,6 +28,10 @@ vector<Statement*> children;
   
   virtual void toString(){
       cout << "tostring"<<endl;
+  }
+  
+  virtual void convert(BBlock** current){
+    cout << "Convert not implemented"<<endl;
   }
 };
 
