@@ -2,6 +2,7 @@
 #define IF_H
 #include "Sequence.cpp"
 #include "Statement.cpp"
+#include<vector>
 
 class If: public Statement
 {
@@ -9,8 +10,9 @@ class If: public Statement
     Expression* condition;
     Sequence* seq_true;
     Sequence* seq_false;
-    If(Expression* condition, Sequence* instructions_true, Sequence* instructions_false):
-        condition(condition), seq_true(instructions_true), seq_false(instructions_false)
+    vector<pair<Expression*, Sequence*>> elsifs;
+    If(Expression* condition, Sequence* instructions_true, Sequence* instructions_false, vector<pair<Expression*, Sequence*>> elsifs):
+        condition(condition), seq_true(instructions_true), seq_false(instructions_false), elsifs(elsifs)
     {
     }
     
@@ -32,6 +34,15 @@ class If: public Statement
         seq_true->convert(&trueBlock);
         (*current)->trueExit = trueBlock;
         trueBlock->trueExit = back;
+        /*
+        for(auto i: elsifs){
+            // i.first/ i.second
+            BBlock* b = new BBlock();
+            seq_true->convert(&trueBlock);
+            (*current)->trueExit = trueBlock;
+            trueBlock->trueExit = back;
+        }
+        */
         
         if(seq_false != NULL){
             BBlock* falseBlock = new BBlock();
