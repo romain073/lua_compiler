@@ -17,6 +17,7 @@ void yy::parser::error(string const&err)
 }
 
 int Expression::nameCounter = 0;
+int BBlock::blockCounter = 0;
 int main(int argc, char **argv)
 {
   yy::parser parser;
@@ -38,7 +39,6 @@ int main(int argc, char **argv)
     
     root->convert(&current);
     start->dumpCFG();
-      
     
     
     /*ofstream myfile;

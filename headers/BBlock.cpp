@@ -15,17 +15,34 @@ class BBlock
 public:
 list<ThreeAd> instructions;
 BBlock *trueExit, *falseExit;
+string label;
+static int blockCounter;
   
   BBlock()
-    :  trueExit(NULL), falseExit(NULL)  {}
+    :  trueExit(NULL), falseExit(NULL)  {
+      label = newName();
+    }
 
   void dump()
   {
-    cout << "BBlock @ " << this << endl;
+    cout << label << endl;
     for(auto i : instructions)
       i.dump();
-    cout << "True: " << trueExit << endl;
-    cout << "False: " << falseExit << endl;
+    if(trueExit != NULL)
+      cout << "True: " << trueExit->label << endl;
+    else
+      cout << "True: NULL" << endl;
+    if(falseExit != NULL)
+      cout << "False: " << falseExit->label << endl;
+    else
+      cout << "False: NULL" << endl;
+  }
+  
+  static string newName()
+  {
+    stringstream result;
+    result << "_label" << BBlock::blockCounter++;
+    return result.str();
   }
   
   void assembly(){
