@@ -1,10 +1,11 @@
 a = 1
 b, a = a, b
-c = a/b
-d = a+b
-e = a-b
 if a then
 f = a*b
-else
+elseif b then
 g = a/b
+elseif c then
+h = b+a
+else
+i = a-b
 end
