@@ -37,7 +37,7 @@ int main(int argc, char **argv)
     BBlock *current = start;
     
     root->convert(&current);
-    current->dumpCFG();
+    start->dumpCFG();
       
     
     

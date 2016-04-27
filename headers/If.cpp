@@ -21,6 +21,26 @@ class If: public Statement
         
         cout << endl;
     }
+    
+    void convert(BBlock** current){
+        // TODO convert compar
+        
+        
+        BBlock* back = new BBlock();
+        
+        BBlock* trueBlock = new BBlock();
+        seq_true->convert(&trueBlock);
+        (*current)->trueExit = trueBlock;
+        trueBlock->trueExit = back;
+        
+        if(seq_false != NULL){
+            BBlock* falseBlock = new BBlock();
+            seq_false->convert(&falseBlock);
+            (*current)->falseExit = falseBlock;
+            falseBlock->trueExit = back;
+        }
+        *current = back;
+    }
 };
 
 #endif
