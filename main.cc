@@ -32,23 +32,22 @@ int main(int argc, char **argv)
   }
   
   if(!parser.parse()){
-    root->dump();
+    //root->dump();
     
     BBlock *start = new BBlock();
     BBlock *current = start;
     
     root->convert(&current);
-    start->dumpCFG();
     
-    
-    /*ofstream myfile;
-    myfile.open("tree.dot");
-    int id = 0;
-    myfile << "digraph {" << endl;
-    root->dumpToFile(myfile, id);
+    ofstream myfile;
+    myfile.open("graph.dot");
+    myfile << "digraph structs { node [shape=record];" << endl;
+    start->dumpGraph(myfile);
     myfile << "}" << endl;
-    myfile.close();
-    delete root;*/
+    myfile.close(); 
+    system("dot -Tpdf graph.dot -ograph.pdf");
+    
+    // TODO clean parse tree & graphs
     return 0;
   }
   return 1;

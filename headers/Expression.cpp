@@ -19,17 +19,6 @@ static int nameCounter;
   Expression(Expression *l, Expression *r) 
     : left(l), right(r){}
 
-  void dump(int depth=0)
-  {
-    for(int i=0; i<depth; i++)  
-      cout << "  ";
-    this->toString();
-    if(left!=NULL)
-      left->dump(depth+1);
-    if(right!=NULL)
-      right->dump(depth+1);
-  }
-  
   virtual void toString(){
       cout << "Expression" <<endl;
   }

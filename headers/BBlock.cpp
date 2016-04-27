@@ -7,6 +7,7 @@
 #include "ThreeAd.cpp"
 #include<iostream>
 #include<sstream>
+#include<fstream>
 #include<set>
 
 using namespace std;
@@ -22,6 +23,32 @@ static int blockCounter;
     :  trueExit(NULL), falseExit(NULL)  {
       label = newName();
     }
+
+
+  void blockToGraph(ofstream &f){
+    f << label << "[label=\"{<h>"<< label <<"|";
+    for(auto i : instructions){
+      i.graph(f);
+      f<<"|";
+    }
+    if(trueExit != NULL)
+      f << "<t>True: " << trueExit->label;
+    else
+      f << "True: NULL";
+    f<<"|";
+    if(falseExit != NULL)
+      f << "<f>False: " << falseExit->label;
+    else
+      f << "False: NULL";
+    f << "}\"];" << endl;
+    
+    
+    if(trueExit != NULL)
+      f<<this->label<<":t ->"<<trueExit->label<<":h;"<<endl;
+    if(falseExit != NULL)
+      f<<this->label<<":f ->"<<falseExit->label<<":h;"<<endl;
+  }
+
 
   void dump()
   {
@@ -44,18 +71,7 @@ static int blockCounter;
     result << "_label" << BBlock::blockCounter++;
     return result.str();
   }
-  
-  void assembly(){
-    cout << "_block" << this <<":"<< endl;
-    for(auto i : instructions)
-      i.assembly();
-    if(trueExit != 0 && falseExit == 0)
-      cout <<"jmp _block"<< trueExit << endl;
-    else if(trueExit != 0){
-    cout <<"_block"<< trueExit << endl;
-    cout << "jmp _block" << falseExit << endl;
-    }
-  }
+
   
   void dumpCFG()
 {
@@ -69,6 +85,26 @@ set<BBlock *> done, todo;
     todo.erase(first);
 
     next->dump();
+    done.insert(next);
+    if(next->trueExit!=NULL && done.find(next->trueExit)==done.end())
+      todo.insert(next->trueExit);
+    if(next->falseExit!=NULL && done.find(next->falseExit)==done.end())
+      todo.insert(next->falseExit);
+  }
+}
+
+  void dumpGraph(ofstream &f)
+{
+set<BBlock *> done, todo;
+  todo.insert(this);
+  while(todo.size()>0)
+  {
+    // Pop an arbitrary element from todo set
+    auto first = todo.begin();
+    BBlock *next = *first;
+    todo.erase(first);
+
+    next->blockToGraph(f);
     done.insert(next);
     if(next->trueExit!=NULL && done.find(next->trueExit)==done.end())
       todo.insert(next->trueExit);
