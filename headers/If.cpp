@@ -26,7 +26,7 @@ class If: public Statement
     
     void convert(BBlock** current){
         // TODO convert compar
-        (*current)->instructions.push_back(ThreeAd("todo", 'c', "comp", "comp"));
+        (*current)->instructions.push_back(ThreeAd("if", 'c', "comp", "todo"));
         
         BBlock* back = new BBlock();
         
