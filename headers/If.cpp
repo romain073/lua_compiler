@@ -30,24 +30,24 @@ class If: public Statement
         BBlock* back = new BBlock();
         
         BBlock* trueBlock = new BBlock();
-        seq_true->convert(&trueBlock);
+        BBlock* trueCur = trueBlock;
+        seq_true->convert(&trueCur);
         (*current)->trueExit = trueBlock;
-        trueBlock->trueExit = back;
+        trueCur->trueExit = back;
         /*
         for(auto i: elsifs){
             // i.first/ i.second
-            BBlock* b = new BBlock();
-            seq_true->convert(&trueBlock);
-            (*current)->trueExit = trueBlock;
-            trueBlock->trueExit = back;
         }
         */
         
         if(seq_false != NULL){
             BBlock* falseBlock = new BBlock();
-            seq_false->convert(&falseBlock);
+            BBlock* falseCur = falseBlock;
+            seq_false->convert(&falseCur);
             (*current)->falseExit = falseBlock;
-            falseBlock->trueExit = back;
+            falseCur->trueExit = back;
+        }else{
+            (*current)->falseExit = back;
         }
         *current = back;
     }

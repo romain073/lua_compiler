@@ -1,9 +1,19 @@
-a = 1
-b, a = a, b
-while a%2==b%2 do
-    if a>=2 then
-        a = a^2
+while 1==2 do
+    if 0==0 then
+        a=1
+        if 1==1 then
+            b=1
+        else
+            b=2
+        end
+        a=2
     else
-        b = b+1
+        c=1
+        if 1==1 then
+            d=1
+        else
+            d=2
+        end
+        c=2
     end
 end
