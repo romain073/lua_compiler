@@ -10,6 +10,7 @@
     #include "headers/Constant.cpp"
     #include "headers/Variable.cpp"
     #include "headers/BinOp.cpp"
+    #include "headers/UnOp.cpp"
     #include "headers/Comparison.cpp"
     #include "headers/If.cpp"
     #include "headers/While.cpp"
@@ -191,9 +192,9 @@ exp : TRUE                      {/* $$=new Node("value", "true"); */}
     | prefixexp                 { $$=$1; }
     | function                  {/* $$=$1; */}
     | tableconstructor          {/* $$=$1; */}
-    | MINUS exp %prec UNARY     {/* $$=(new Node($1, ""))->add($2); */}
-    | NOT exp %prec UNARY       {/* $$=(new Node($1, ""))->add($2); */}
-    | HASH exp %prec UNARY      {/* $$=(new Node($1, ""))->add($2); */}
+    | MINUS exp %prec UNARY     { $$=new UnOp($2, '-'); }
+    | NOT exp %prec UNARY       { $$=new UnOp($2, '!'); }
+    | HASH exp %prec UNARY      { $$=new UnOp($2, '#'); }
     | exp PLUS exp              { $$=new BinOp($1, $3, '+'); }
     | exp MULTIPLY exp          { $$=new BinOp($1, $3, '*'); }
     | exp MINUS exp             { $$=new BinOp($1, $3, '-'); }
