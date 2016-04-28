@@ -6,12 +6,12 @@ using namespace std;
 class Constant: public Expression
 {
 public:
-string val;
+    string string_val;
       Constant(string t) 
-    : Expression(NULL, NULL), val(t){}
+    : Expression(NULL, NULL), string_val(t){}
 
     void namePass(map<Expression*,string> &naming){
-        naming[this] = "$"+this->val;
+        naming[this] = "$"+this->string_val;
     }
     
     void emitPass(map<Expression*,string> &naming, BBlock** out){}

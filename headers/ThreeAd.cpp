@@ -17,11 +17,6 @@ public:
   ThreeAd(string out, char o, string l, string r)
     :  result(out), op(o), lhs(l), rhs(r)      {}
 
-  void dump()
-  {
-    cout << result << " := " << lhs << " " 
-         << op << " " << rhs << endl;
-  }
   void graph(ofstream &f)
   {
     f << result << " := " << lhs << " " 

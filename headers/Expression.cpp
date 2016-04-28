@@ -8,14 +8,11 @@
 #include<sstream>
 using namespace std;
 
-class Expression      // Implicit union of binary operators, constants and variables.
+class Expression
 {
 public:
-
-class Expression *left, *right;
-int value;
-string name;
-static int nameCounter;
+  class Expression *left, *right;
+  static int nameCounter;
   Expression(Expression *l, Expression *r) 
     : left(l), right(r){}
 

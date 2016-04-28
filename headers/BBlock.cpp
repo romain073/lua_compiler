@@ -48,22 +48,6 @@ static int blockCounter;
     if(falseExit != NULL)
       f<<this->label<<":f ->"<<falseExit->label<<":h;"<<endl;
   }
-
-
-  void dump()
-  {
-    cout << label << endl;
-    for(auto i : instructions)
-      i.dump();
-    if(trueExit != NULL)
-      cout << "True: " << trueExit->label << endl;
-    else
-      cout << "True: NULL" << endl;
-    if(falseExit != NULL)
-      cout << "False: " << falseExit->label << endl;
-    else
-      cout << "False: NULL" << endl;
-  }
   
   static string newName()
   {
@@ -71,27 +55,6 @@ static int blockCounter;
     result << "Block" << BBlock::blockCounter++;
     return result.str();
   }
-
-  
-  void dumpCFG()
-{
-set<BBlock *> done, todo;
-  todo.insert(this);
-  while(todo.size()>0)
-  {
-    // Pop an arbitrary element from todo set
-    auto first = todo.begin();
-    BBlock *next = *first;
-    todo.erase(first);
-
-    next->dump();
-    done.insert(next);
-    if(next->trueExit!=NULL && done.find(next->trueExit)==done.end())
-      todo.insert(next->trueExit);
-    if(next->falseExit!=NULL && done.find(next->falseExit)==done.end())
-      todo.insert(next->falseExit);
-  }
-}
 
   void dumpGraph(ofstream &f)
 {

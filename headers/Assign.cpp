@@ -1,18 +1,14 @@
 #ifndef ASSIGN_H
 #define ASSIGN_H
 #include "Statement.cpp"
-#include <list>
+#include <vector>
 
 class Assign: public Statement
 {
     public:
     vector<Expression*> variables;
     vector<Expression*> values;
-    Assign(vector<Expression*> var, vector<Expression*> val): variables(var), values(val){
-        //t = target;
-        // this->expressions.push_back( Variable(target) ); TODO
-        //this->expressions.push_back(val);
-    }
+    Assign(vector<Expression*> var, vector<Expression*> val): variables(var), values(val){ }
     
     void convert(BBlock** current){
         if(this->variables.size()==1){
@@ -40,7 +36,6 @@ class Assign: public Statement
             }
         }
     }
-
 };
 
 #endif

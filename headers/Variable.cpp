@@ -6,12 +6,12 @@ using namespace std;
 class Variable: public Expression
 {
 public:
-string val;
+    string name;
       Variable(string t) 
-    : Expression(NULL, NULL), val(t){}
+    : Expression(NULL, NULL), name(t){}
 
     void namePass(map<Expression*,string> &naming){
-        naming[this] = this->val;
+        naming[this] = this->name;
     }
     
     void emitPass(map<Expression*,string> &naming, BBlock** out){  }
