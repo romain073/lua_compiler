@@ -10,6 +10,7 @@
     #include "headers/Constant.cpp"
     #include "headers/Variable.cpp"
     #include "headers/BinOp.cpp"
+    #include "headers/Comparison.cpp"
     #include "headers/If.cpp"
     #include "headers/While.cpp"
 }
@@ -203,7 +204,7 @@ exp : TRUE                      {/* $$=new Node("value", "true"); */}
     | exp LTE exp               {/* $$=(new Node($2, ""))->add($1)->add($3); */}
     | exp GT exp                {/* $$=(new Node($2, ""))->add($1)->add($3); */}
     | exp GTE exp               {/* $$=(new Node($2, ""))->add($1)->add($3); */}
-    | exp EQ exp                {/* $$=(new Node($2, ""))->add($1)->add($3); */}
+    | exp EQ exp                { $$=new Comparison($1, $3, '=');}
     | exp NE exp                {/* $$=(new Node($2, ""))->add($1)->add($3); */}
     | exp AND exp               {/* $$=(new Node($2, ""))->add($1)->add($3); */}
     | exp OR exp                {/* $$=(new Node($2, ""))->add($1)->add($3); */}

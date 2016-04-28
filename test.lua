@@ -1,9 +1,9 @@
 a = 1
 b, a = a, b
-while 1 do
-    if a then
-        f = a*b
+while a==b do
+    if a==1 then
+        a = a+1
     else
-        i = a-b
+        b = b+1
     end
 end

@@ -16,9 +16,8 @@ class While: public Statement
     
     
     void convert(BBlock** current){
-        // TODO convert compar to current block
-        
-        (*current)->instructions.push_back(ThreeAd("outerwhile", 'c', "comp", "todo"));
+        condition->convert(current);
+        //(*current)->instructions.push_back(ThreeAd("outerwhile", 'c', "comp", "todo"));
         
         BBlock* back = new BBlock();
         
@@ -26,8 +25,7 @@ class While: public Statement
         BBlock* loopcurr = loopblock;
         instructions->convert(&loopcurr);
         
-        // TODO convert compar to loop block
-        loopcurr->instructions.push_back(ThreeAd("innerwhile", 'c', "comp", "todo"));
+        condition->convert(&loopcurr);
         
         (*current)->trueExit = loopblock;
         (*current)->falseExit = back;
