@@ -16,14 +16,6 @@ class If: public Statement
     {
     }
     
-    void toString(){
-        cout << "IF!" ;
-        condition->toString();
-        
-        
-        cout << endl;
-    }
-    
     void convert(BBlock** current){
         condition->convert(current);
         

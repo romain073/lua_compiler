@@ -14,17 +14,6 @@ class Assign: public Statement
         //this->expressions.push_back(val);
     }
     
-    void toString(){
-        cout << "(Assign) ";
-        for(size_t i = 0; i<this->variables.size(); i++){
-            this->variables[i]->toString();
-            cout  << ", ";
-            this->values[i]->toString();
-            cout << " - ";
-        }
-        cout << endl;
-    }
-    
     void convert(BBlock** current){
         if(this->variables.size()==1){
             // var = value

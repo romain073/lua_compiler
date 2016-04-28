@@ -13,10 +13,6 @@ class Sequence: public Statement
         return this;
     }
     
-    void toString(){
-        cout << "SEQUENCE!" << endl;
-    }
-    
     void convert(BBlock** current){
         for(auto s : this->children){
             s->convert(current);

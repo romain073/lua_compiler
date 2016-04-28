@@ -11,10 +11,6 @@ vector<Expression*> expressions;
 vector<Statement*> children;
   Statement() {}
 
-  virtual void toString(){
-      cout << "tostring"<<endl;
-  }
-  
   virtual void convert(BBlock** current){
     cout << "Convert not implemented"<<endl;
   }

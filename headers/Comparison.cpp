@@ -16,13 +16,6 @@ Operation op;
       Comparison(Expression *l, Expression *r, Operation t) 
     : Expression(l, r), op(t){}
 
-  void toString(){
-      cout << "Comparison " << op;
-      left->toString();
-      cout << " ";
-      right->toString();
-    
-  }
   void namePass(map<Expression*,string> &naming){
         naming[this] = newName();
         this->left->namePass(naming);

@@ -10,14 +10,6 @@ char op;
       BinOp(Expression *l, Expression *r, char t) 
     : Expression(l, r), op(t){}
 
-  void toString(){
-      cout << "BinOp " << op;
-      left->toString();
-      cout << " ";
-      right->toString();
-    
-  }
-  
   void namePass(map<Expression*,string> &naming){
         naming[this] = newName();
         this->left->namePass(naming);

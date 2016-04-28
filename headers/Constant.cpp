@@ -10,10 +10,6 @@ string val;
       Constant(string t) 
     : Expression(NULL, NULL), val(t){}
 
-  void toString(){
-      cout << "(Constant)'" <<val <<"'";
-  }
-  
     void namePass(map<Expression*,string> &naming){
         naming[this] = "$"+this->val;
     }

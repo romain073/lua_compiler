@@ -19,10 +19,6 @@ static int nameCounter;
   Expression(Expression *l, Expression *r) 
     : left(l), right(r){}
 
-  virtual void toString(){
-      cout << "Expression" <<endl;
-  }
-  
   virtual bool isLeaf(){
     return left == NULL && right == NULL;
   }
