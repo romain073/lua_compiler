@@ -6,3 +6,5 @@ lex.yy.c
 compiler.output
 compiler.tab.cc
 compiler.tab.hh
+prog
+prog.s
