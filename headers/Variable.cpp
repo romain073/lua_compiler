@@ -11,6 +11,7 @@ public:
     : Expression(NULL, NULL), name(t){}
 
     void namePass(map<Expression*,string> &naming){
+        Expression::names.insert(this->name);
         naming[this] = this->name;
     }
     

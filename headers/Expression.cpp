@@ -13,6 +13,7 @@ class Expression
 public:
   class Expression *left, *right;
   static int nameCounter;
+  static set<string> names;
   Expression(Expression *l, Expression *r) 
     : left(l), right(r){}
 
@@ -24,6 +25,7 @@ public:
   {
     stringstream result;
     result << "_t" << Expression::nameCounter++;
+    names.insert(result.str());
     return result.str();
   }
   

@@ -17,12 +17,13 @@ void yy::parser::error(string const&err)
 }
 
 int Expression::nameCounter = 0;
+set<string> Expression::names;
 int BBlock::blockCounter = 0;
 int main(int argc, char **argv)
 {
   yy::parser parser;
   if(argc != 2){
-    cout << "Usage: ./int program.lua" << endl;
+    cout << "Usage: ./compiler program.lua" << endl;
     return 1;
   }
   yyin = fopen(argv[1], "r");
@@ -49,8 +50,19 @@ int main(int argc, char **argv)
     system("dot -Tpdf graph.dot -ograph.pdf");
     
     myfile.open("prog.s");
+    myfile << ".section .data"<<endl;
+    for(string s : Expression::names){
+      myfile<<"\t"<<s<<":\t.long 0"<<endl;
+    }
+    
+    myfile << ".section .text"<<endl;
+    myfile << ".globl _start"<<endl;
+    myfile << "_start:"<<endl;
+    
     start->dumpAssembly(myfile);
     myfile.close();
+    
+    system("as prog.s -o prog.o && ld prog.o -o prog && ./prog; echo $?");
     
     // TODO clean parse tree & graphs
     return 0;
