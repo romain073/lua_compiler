@@ -22,5 +22,26 @@ public:
     f << result << " := " << lhs << " " 
          << op << " " << rhs;
   }
+  
+  void assembly(ofstream &f){
+    f<< "\tmovq\t"<<lhs<<",\t%eax"<<endl;
+    if(op != 'c')
+      f<< "\tmovq\t"<<rhs<<",\t%ebx"<<endl;
+    
+    switch(op){
+      case 'c':
+        //f<< "\tmv\t%eax, %ebx"<<endl;
+        break;
+      case '+':
+        f<< "\taddq\t%eax, %ebx"<<endl;
+        break;
+      case 48:
+        f<< "\tsubq\t%eax, %ebx"<<endl;
+        break;
+    }
+    f<< "\tmovq\t%eax, "<<result<<endl;
+  }
+
+  
 };
 #endif

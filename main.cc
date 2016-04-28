@@ -45,7 +45,12 @@ int main(int argc, char **argv)
     start->dumpGraph(myfile);
     myfile << "}" << endl;
     myfile.close(); 
+    
     system("dot -Tpdf graph.dot -ograph.pdf");
+    
+    myfile.open("prog.s");
+    start->dumpAssembly(myfile);
+    myfile.close();
     
     // TODO clean parse tree & graphs
     return 0;

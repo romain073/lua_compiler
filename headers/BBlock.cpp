@@ -58,7 +58,7 @@ static int blockCounter;
 
   void dumpGraph(ofstream &f)
 {
-set<BBlock *> done, todo;
+  set<BBlock *> done, todo;
   todo.insert(this);
   while(todo.size()>0)
   {
@@ -74,7 +74,41 @@ set<BBlock *> done, todo;
     if(next->falseExit!=NULL && done.find(next->falseExit)==done.end())
       todo.insert(next->falseExit);
   }
+    
 }
+  
+  void assembly(ofstream &f){
+    f << this->label <<":"<< endl;
+    for(auto i : instructions)
+      i.assembly(f);
+    if(trueExit != 0 && falseExit == 0)
+      f <<"\tjmp\t"<< trueExit->label << endl;
+    else if(trueExit == 0 && falseExit == 0){
+      // Done
+    }else{
+      f << "\tjz\t" << trueExit->label << endl;
+      f << "\tjmp\t" << falseExit->label << endl;
+    }
+  }
+  
+  void dumpAssembly(ofstream &f){
+    set<BBlock *> done, todo;
+    todo.insert(this);
+    while(todo.size()>0)
+    {
+      // Pop an arbitrary element from todo set
+      auto first = todo.begin();
+      BBlock *next = *first;
+      todo.erase(first);
+  
+      next->assembly(f);
+      done.insert(next);
+      if(next->trueExit!=NULL && done.find(next->trueExit)==done.end())
+        todo.insert(next->trueExit);
+      if(next->falseExit!=NULL && done.find(next->falseExit)==done.end())
+        todo.insert(next->falseExit);
+    }
+  }
   
   
 };

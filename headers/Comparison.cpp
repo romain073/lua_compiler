@@ -1,5 +1,6 @@
 #ifndef COMPARISON_H
 #define COMPARISON_H
+
 #include "Expression.cpp"
 #include "Variable.cpp"
 #include "Constant.cpp"
@@ -10,7 +11,7 @@ class Comparison: public Expression
 public:
 
 enum Operation {EQ,NE,GE,GT,LE,LT};
-const string opStrings[6] = { "EQ","NE","GE","GT","LE","LT" };
+//const string opStrings[6] = { "EQ","NE","GE","GT","LE","LT" };
 
 Operation op;
       Comparison(Expression *l, Expression *r, Operation t) 
@@ -28,8 +29,7 @@ Operation op;
     if (!this->right->isLeaf()) 
         this->right->emitPass(naming, out);
 
-     
-    ThreeAd a(naming[this], 48+op, naming[this->left], naming[this->right] +" //"+ opStrings[op]);
+    ThreeAd a(naming[this], 48+op, naming[this->left], naming[this->right]);
     (*out)->instructions.push_back(a);
   }
 };
