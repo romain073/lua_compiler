@@ -17,7 +17,6 @@ class While: public Statement
     
     void convert(BBlock** current){
         condition->convert(current);
-        //(*current)->instructions.push_back(ThreeAd("outerwhile", 'c', "comp", "todo"));
         
         BBlock* back = new BBlock();
         

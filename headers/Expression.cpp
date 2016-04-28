@@ -23,6 +23,10 @@ static int nameCounter;
       cout << "Expression" <<endl;
   }
   
+  virtual bool isLeaf(){
+    return left == NULL && right == NULL;
+  }
+  
   static string newName()
   {
     stringstream result;

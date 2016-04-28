@@ -1,8 +1,8 @@
 a = 1
 b, a = a, b
-while a==b do
-    if a==1 then
-        a = a+1
+while a%2==b%2 do
+    if a>=2 then
+        a = a^2
     else
         b = b+1
     end

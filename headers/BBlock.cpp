@@ -68,7 +68,7 @@ static int blockCounter;
   static string newName()
   {
     stringstream result;
-    result << "_label" << BBlock::blockCounter++;
+    result << "Block" << BBlock::blockCounter++;
     return result.str();
   }
 
