@@ -24,22 +24,30 @@ public:
   }
   
   void assembly(ofstream &f){
-    f<< "\tmovq\t"<<lhs<<",\t%eax"<<endl;
+    f<< "\tmovq\t"<<lhs<<",\t%rax"<<endl;
     if(op != 'c')
-      f<< "\tmovq\t"<<rhs<<",\t%ebx"<<endl;
+      f<< "\tmovq\t"<<rhs<<",\t%rbx"<<endl;
     
     switch(op){
       case 'c':
-        //f<< "\tmv\t%eax, %ebx"<<endl;
+        //f<< "\tmv\t%rax,\t%rbx"<<endl;
         break;
       case '+':
-        f<< "\taddq\t%eax, %ebx"<<endl;
+        f<< "\taddq\t%rbx,\t%rax"<<endl;
         break;
+      case '*':
+        f<< "\timulq\t%rbx,\t%rax"<<endl;
+        break;
+      case '/':
+        f << "\tcqto"<<endl;
+        f<< "\tidivq\t%rbx"<<endl;
+        break;
+      case '-':
       case 48:
-        f<< "\tsubq\t%eax, %ebx"<<endl;
+        f<< "\tsubq\t%rbx,\t%rax"<<endl;
         break;
     }
-    f<< "\tmovq\t%eax, "<<result<<endl;
+    f<< "\tmovq\t%rax,\t"<<result<<endl;
   }
 
   

@@ -84,7 +84,9 @@ static int blockCounter;
     if(trueExit != 0 && falseExit == 0)
       f <<"\tjmp\t"<< trueExit->label << endl;
     else if(trueExit == 0 && falseExit == 0){
-      // Done
+      f << "\tmovq\ta,\t%rbx" << endl
+        << "\tmovq\t$1,\t%rax" << endl
+        << "\tint\t$0x80" << endl;
     }else{
       f << "\tjz\t" << trueExit->label << endl;
       f << "\tjmp\t" << falseExit->label << endl;
