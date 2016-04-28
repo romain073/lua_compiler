@@ -226,7 +226,7 @@ explist : exp {$$.push_back($1);}
 
 prefixexp   : var                       { $$=$1; }
             | functioncall              {/* $$=$1; */}
-            | POPEN exp PCLOSE          {/* $$=$2; */}
+            | POPEN exp PCLOSE          { $$=$2; }
             
 functioncall: prefixexp args            {/* $$=(new Node("functioncall"))->add($1)->add($2); */}
             | prefixexp COLON NAME args {/* $$=(new Node("functioncall"))->add($1)->add(new Node("name",$3))->add($4); */}
