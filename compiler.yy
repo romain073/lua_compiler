@@ -15,6 +15,7 @@
     #include "headers/If.cpp"
     #include "headers/While.cpp"
     #include "headers/Call.cpp"
+    #include "headers/String.cpp"
 }
 
 %code{
@@ -115,7 +116,7 @@
 %type <void*> fieldlist
 %type <void*> field
 %type <void*> tableconstructor
-%type <void*> str
+%type <std::string> str
 
   
 
@@ -188,7 +189,7 @@ exp : TRUE                      {/* $$=new Node("value", "true"); */}
     | FALSE                     {/* $$=new Node("value", "false"); */}
     | NIL                       {/* $$=new Node("value", "nil"); */}
     | NUMBER                    { $$=new Constant($1); }
-    | str                       {/* $$=$1; */}  
+    | str                       { $$=new String($1); }  
     | DOTDOTDOT                 {/* $$=new Node("DOTDOTDOT", $1); */}
     | prefixexp                 { $$=$1; }
     | function                  {/* $$=$1; */}
@@ -236,7 +237,7 @@ args: POPEN optexplist PCLOSE           {$$ = $2;}
     | tableconstructor                  {/* $$=(new Node("tableargs"))->add($1); */}
     | str                            {/* $$=(new Node("str_arg"))->add($1); */}
 
-str: STRING                             {/* $$=new Node("string", $1.erase($1.length()-1,1).erase(0,1)); */}
+str: STRING                             { $$=$1.erase($1.length()-1,1).erase(0,1); }
 
 optexplist  : /* empty */               {}
             | explist                   { $$=$1; }

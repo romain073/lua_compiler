@@ -6,4 +6,4 @@ end
 while a == 43 do
     a = a-1
 end
-print(a)
+print("Hello world")

@@ -21,11 +21,12 @@ public:
     return left == NULL && right == NULL;
   }
   
-  static string newName()
+  static string newName(bool variable = true)
   {
     stringstream result;
     result << "_t" << Expression::nameCounter++;
-    names.insert(result.str());
+    if(variable)
+      names.insert(result.str());
     return result.str();
   }
   

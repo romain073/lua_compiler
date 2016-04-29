@@ -6,6 +6,7 @@
 #include "headers/Constant.cpp"
 #include "headers/Variable.cpp"
 #include "headers/BBlock.cpp"
+#include "headers/String.cpp"
 #include <fstream>
 #include <string.h>
 extern Statement* root;
@@ -17,6 +18,7 @@ void yy::parser::error(string const&err)
 
 int Expression::nameCounter = 0;
 set<string> Expression::names;
+vector<pair<string,string>> String::strings;
 int BBlock::blockCounter = 0;
 int main(int argc, char **argv)
 {
@@ -54,6 +56,12 @@ int main(int argc, char **argv)
       myfile<<"\t"<<s<<":\t.quad 0"<<endl;
     }
     
+    for(auto s : String::strings){
+      myfile <<"\t"<< s.first <<":\t.ascii\t\""<<s.second <<"\""<<endl;
+      myfile <<"\t"<< s.first <<"_len = \t. - "<< s.first<<endl;
+
+    }
+
     myfile << ".section .text"<<endl;
     myfile << ".globl _start"<<endl;
     myfile << "_start:"<<endl;
@@ -61,7 +69,7 @@ int main(int argc, char **argv)
     start->dumpAssembly(myfile);
     myfile.close();
     
-    system("as prog.s -o prog.o && ld prog.o -o prog && ./prog; echo $?");
+    system("as prog.s -o prog.o && ld prog.o -o prog && ./prog; echo \"Process ended with status code $?.\"");
     
     // TODO clean parse tree & graphs
     return 0;
