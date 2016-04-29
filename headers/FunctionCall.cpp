@@ -2,6 +2,7 @@
 #define FUNCTIONCALL_H
 
 #include "Expression.cpp"
+#include "Variable.cpp"
 #include <vector>
 using namespace std;
 
@@ -13,7 +14,7 @@ public:
     : Expression(name, NULL), args(args){}
     
     void namePass(map<Expression*,string> &naming){
-        this->left->namePass(naming);
+        //this->left->namePass(naming);
     }
     
     void emitPass(map<Expression*,string> &naming, BBlock** out){
@@ -33,7 +34,14 @@ public:
         (*out)->instructions.push_back(ThreeAd("", "push", "$"+to_string(names.size()), ""));
         
         // add the call
-        (*out)->instructions.push_back(ThreeAd("", "call", naming[this->left], ""));
+        (*out)->instructions.push_back(ThreeAd("", "call", ((Variable*)this->left)->name, ""));
+        
+        // pop argc
+        (*out)->instructions.push_back(ThreeAd("", "pop", "empty todo", ""));
+        for(auto name : names){
+            // pop back the parameters
+            (*out)->instructions.push_back(ThreeAd("", "pop", "empty todo", ""));
+        }
     }
 
 };

@@ -30,6 +30,7 @@ public:
          << op << " " << rhs << endl;
     if(op.compare("call")!=0
       && op.compare("push")!=0
+      && op.compare("pop")!=0
       && !lhs.empty()){
       f<< "\tmovq\t"<<lhs<<",\t%rax"<<endl;
     }
