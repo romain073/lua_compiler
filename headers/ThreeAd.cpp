@@ -24,8 +24,9 @@ public:
   }
   
   void assembly(ofstream &f){
-    f<< "\tmovq\t"<<lhs<<",\t%rax"<<endl;
-    if(op != 'c')
+    if(op != 'x' && !lhs.empty())
+      f<< "\tmovq\t"<<lhs<<",\t%rax"<<endl;
+    if(op != 'c' && !rhs.empty())
       f<< "\tmovq\t"<<rhs<<",\t%rbx"<<endl;
     
     switch(op){
@@ -42,12 +43,16 @@ public:
         f << "\tcqto"<<endl;
         f<< "\tidivq\t%rbx"<<endl;
         break;
+      case 'x':
+        f<< "\t#call \t"<<lhs<<endl;
+        break;
       case '-':
       case 48:
         f<< "\tsubq\t%rbx,\t%rax"<<endl;
         break;
     }
-    f<< "\tmovq\t%rax,\t"<<result<<endl;
+    if(!result.empty())
+      f<< "\tmovq\t%rax,\t"<<result<<endl;
   }
 
   

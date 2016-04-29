@@ -9,11 +9,13 @@
     #include "headers/Assign.cpp"
     #include "headers/Constant.cpp"
     #include "headers/Variable.cpp"
+    #include "headers/FunctionCall.cpp"
     #include "headers/BinOp.cpp"
     #include "headers/UnOp.cpp"
     #include "headers/Comparison.cpp"
     #include "headers/If.cpp"
     #include "headers/While.cpp"
+    #include "headers/Call.cpp"
 }
 
 %code{
@@ -96,7 +98,7 @@
 %type <Expression*> var
 %type <Expression*> exp
 %type <Expression*> prefixexp
-%type <Node*> functioncall
+%type <Expression*> functioncall
 %type <Node*> function
 %type <Node*> args
 %type <Sequence*> else
@@ -137,7 +139,7 @@ laststatement   : RETURN optexplist             {$$=(new Node("return"))->add($2
 
 
 statement   : varlist EQUAL explist             {$$=new Assign($1, $3);}
-            | functioncall                      {/* $$=$1; */}
+            | functioncall                      {$$=new Call($1);}
             | DO block END                      {/* $$=(new Node("do end"))->add($2); */}
             | WHILE exp DO block END            { $$=new While($2, $4); }
             | REPEAT block UNTIL exp            {/* $$=(new Node("repeat"))->add($2)->add($4); */}
@@ -228,7 +230,7 @@ prefixexp   : var                       { $$=$1; }
             | functioncall              {/* $$=$1; */}
             | POPEN exp PCLOSE          { $$=$2; }
             
-functioncall: prefixexp args            {/* $$=(new Node("functioncall"))->add($1)->add($2); */}
+functioncall: prefixexp args            {$$ = new FunctionCall($1);}
             | prefixexp COLON NAME args {/* $$=(new Node("functioncall"))->add($1)->add(new Node("name",$3))->add($4); */}
                 
 args: POPEN optexplist PCLOSE           {/* $$=(new Node("args"))->add($2); */}
