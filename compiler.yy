@@ -92,7 +92,7 @@
 %type <Node*> opt_laststatement
 %type <Statement*> statement
 %type <Node*> laststatement
-%type <Node*> optexplist
+%type <vector<Expression*>> optexplist
 %type <vector<Expression*>> varlist
 %type <vector<Expression*>> explist
 %type <Expression*> var
@@ -100,7 +100,7 @@
 %type <Expression*> prefixexp
 %type <Expression*> functioncall
 %type <Node*> function
-%type <Node*> args
+%type <vector<Expression*>> args
 %type <Sequence*> else
 %type <std::vector<std::pair<Expression*, Sequence*>>> elseif
 %type <Node*> optcommaexp
@@ -130,11 +130,11 @@ block   : statements opt_laststatement          {$$=$1;/* TODO add optlast*/}
 statements : /* empty */                        {$$=new Sequence();}
         | statements statement opt_semicolon    {$$=$1; $$->add($2);}
         
-opt_laststatement: /* empty */                  {$$=new Node("pass");}
-                | laststatement opt_semicolon   {$$=$1;}
+opt_laststatement: /* empty */                  {/*$$=new Node("pass");*/}
+                | laststatement opt_semicolon   {/*$$=$1;*/}
 
-laststatement   : RETURN optexplist             {$$=(new Node("return"))->add($2);}
-                | BREAK                         {$$=new Node("break");}
+laststatement   : RETURN optexplist             {/*$$=(new Node("return"))->add($2);*/}
+                | BREAK                         {/*$$=new Node("break");*/}
         
 
 
@@ -227,20 +227,20 @@ explist : exp {$$.push_back($1);}
         | explist COMMA exp {$$=$1; $$.push_back($3); }
 
 prefixexp   : var                       { $$=$1; }
-            | functioncall              {/* $$=$1; */}
+            | functioncall              { $$=$1; }
             | POPEN exp PCLOSE          { $$=$2; }
             
-functioncall: prefixexp args            {$$ = new FunctionCall($1);}
+functioncall: prefixexp args            {$$ = new FunctionCall($1, $2);}
             | prefixexp COLON NAME args {/* $$=(new Node("functioncall"))->add($1)->add(new Node("name",$3))->add($4); */}
                 
-args: POPEN optexplist PCLOSE           {/* $$=(new Node("args"))->add($2); */}
+args: POPEN optexplist PCLOSE           {$$ = $2;}
     | tableconstructor                  {/* $$=(new Node("tableargs"))->add($1); */}
     | str                            {/* $$=(new Node("str_arg"))->add($1); */}
 
 str: STRING                             {/* $$=new Node("string", $1.erase($1.length()-1,1).erase(0,1)); */}
 
-optexplist  : /* empty */               {/* $$=new Node("pass"); */}
-            | explist                   {/* $$=$1; */}
+optexplist  : /* empty */               {}
+            | explist                   { $$=$1; }
 
 				
 tableconstructor : CBRACKETOPEN optfieldlist CBRACKETCLOSE {/* $$=(new Node("tableconstructor"))->add($2); */}

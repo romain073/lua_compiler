@@ -24,7 +24,9 @@ public:
   }
   
   void assembly(ofstream &f){
-    if(op != 'x' && !lhs.empty())
+    f<< endl<<"\t #" << result << " := " << lhs << " " 
+         << op << " " << rhs << endl;
+    if(op != 'x' && op!= 'p' && !lhs.empty())
       f<< "\tmovq\t"<<lhs<<",\t%rax"<<endl;
     if(op != 'c' && !rhs.empty())
       f<< "\tmovq\t"<<rhs<<",\t%rbx"<<endl;
