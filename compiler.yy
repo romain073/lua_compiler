@@ -3,7 +3,6 @@
 %define api.value.type variant
 %define api.token.constructor
 %code requires{
-    #include "headers/Node.cpp"
     #include "headers/Statement.cpp"
     #include "headers/Sequence.cpp"
     #include "headers/Assign.cpp"
@@ -89,9 +88,9 @@
 
 %type <Sequence*> block
 %type <Sequence*> statements
-%type <Node*> opt_laststatement
+%type <void*> opt_laststatement
 %type <Statement*> statement
-%type <Node*> laststatement
+%type <void*> laststatement
 %type <vector<Expression*>> optexplist
 %type <vector<Expression*>> varlist
 %type <vector<Expression*>> explist
@@ -99,24 +98,24 @@
 %type <Expression*> exp
 %type <Expression*> prefixexp
 %type <Expression*> functioncall
-%type <Node*> function
+%type <void*> function
 %type <vector<Expression*>> args
 %type <Sequence*> else
 %type <std::vector<std::pair<Expression*, Sequence*>>> elseif
-%type <Node*> optcommaexp
-%type <Node*> namelist
-%type <Node*> funcname
-%type <Node*> funcbody
-%type <Node*> optparlist
-%type <Node*> parlist
-%type <Node*> funcnamebase
-%type <Node*> optcolonname
-%type <Node*> eqexplistopt
-%type <Node*> optfieldlist
-%type <Node*> fieldlist
-%type <Node*> field
-%type <Node*> tableconstructor
-%type <Node*> str
+%type <void*> optcommaexp
+%type <void*> namelist
+%type <void*> funcname
+%type <void*> funcbody
+%type <void*> optparlist
+%type <void*> parlist
+%type <void*> funcnamebase
+%type <void*> optcolonname
+%type <void*> eqexplistopt
+%type <void*> optfieldlist
+%type <void*> fieldlist
+%type <void*> field
+%type <void*> tableconstructor
+%type <void*> str
 
   
 

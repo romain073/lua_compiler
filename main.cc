@@ -1,6 +1,5 @@
 #include<iostream>
 #include "compiler.tab.hh"
-#include "headers/Node.cpp"
 #include "headers/Statement.cpp"
 #include "headers/Sequence.cpp"
 #include "headers/Assign.cpp"
