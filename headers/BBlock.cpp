@@ -79,17 +79,24 @@ static int blockCounter;
   
   void assembly(ofstream &f){
     f << this->label <<":"<< endl;
-    for(auto i : instructions)
-      i.assembly(f);
-    if(trueExit != 0 && falseExit == 0)
-      f <<"\tjmp\t"<< trueExit->label << endl;
-    else if(trueExit == 0 && falseExit == 0){
-      f << "\tmovq\ta,\t%rbx" << endl
-        << "\tmovq\t$1,\t%rax" << endl
-        << "\tint\t$0x80" << endl;
+    bool endblock;
+    for(auto i : instructions) {
+      endblock = i.assembly(f);
+    }
+    if(endblock){
+      f<<"\t"<< trueExit->label << endl;
+      if(falseExit != 0){
+        f <<"\tjmp\t"<< falseExit->label << endl;
+      }
     }else{
-      f << "\tjz\t" << trueExit->label << endl;
-      f << "\tjmp\t" << falseExit->label << endl;
+      if(trueExit == 0 && falseExit == 0){
+        // End of the program
+        f << "\tmovq\ta,\t%rbx" << endl
+          << "\tmovq\t$1,\t%rax" << endl
+          << "\tint\t$0x80" << endl;
+      }else{
+        f <<"\tjmp\t"<< trueExit->label << endl;
+      }
     }
   }
   

@@ -23,7 +23,8 @@ public:
          << op << " " << rhs;
   }
   
-  void assembly(ofstream &f){
+  // Returns true if the last instruction is the beginning of a jump
+  bool assembly(ofstream &f){
     //cout << "'"<<op<<"'"<<endl;
     f<< endl<<"\t #" << result << " := " << lhs << " " 
          << op << " " << rhs << endl;
@@ -50,10 +51,33 @@ public:
         f<< "\t#call \t"<<lhs<<endl;
     } else if (!op.compare("EQ")){
         f<< "\tsubq\t%rbx,\t%rax"<<endl;
+        f<<"\tjz";
+        return true;
+    } else if (!op.compare("NE")){
+        f<< "\tsubq\t%rbx,\t%rax"<<endl;
+        f<<"\tjnz";
+        return true;
+    } else if (!op.compare("LT")){
+        f<< "\tsubq\t%rbx,\t%rax"<<endl;
+        f<<"\tjs";
+        return true;
+    } else if (!op.compare("LE")){
+        f<< "\tsubq\t%rax,\t%rbx"<<endl;
+        f<<"\tjns";
+        return true;
+    } else if (!op.compare("GE")){
+        f<< "\tsubq\t%rbx,\t%rax"<<endl;
+        f<<"\tjns";
+        return true;
+    } else if (!op.compare("GT")){
+        f<< "\tsubq\t%rax,\t%rbx"<<endl;
+        f<<"\tjs";
+        return true;
     }
 
     if(!result.empty())
       f<< "\tmovq\t%rax,\t"<<result<<endl;
+      return false;
   }
 
   
