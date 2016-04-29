@@ -51,7 +51,7 @@ int main(int argc, char **argv)
     myfile.open("prog.s");
     myfile << ".section .data"<<endl;
     for(string s : Expression::names){
-      myfile<<"\t"<<s<<":\t.long 0"<<endl;
+      myfile<<"\t"<<s<<":\t.quad 0"<<endl;
     }
     
     myfile << ".section .text"<<endl;
