@@ -33,7 +33,7 @@ public:
         (*out)->instructions.push_back(ThreeAd("", "push", "$"+to_string(names.size()), ""));
         
         // add the call
-        (*out)->instructions.push_back(ThreeAd("", "x", naming[this->left], ""));
+        (*out)->instructions.push_back(ThreeAd("", "call", naming[this->left], ""));
     }
 
 };

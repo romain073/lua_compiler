@@ -28,7 +28,7 @@ public:
     //cout << "'"<<op<<"'"<<endl;
     f<< endl<<"\t #" << result << " := " << lhs << " " 
          << op << " " << rhs << endl;
-    if(op.compare("x")!=0
+    if(op.compare("call")!=0
       && op.compare("push")!=0
       && !lhs.empty()){
       f<< "\tmovq\t"<<lhs<<",\t%rax"<<endl;
@@ -47,7 +47,7 @@ public:
     } else if (!op.compare("/")){
         f << "\tcqto"<<endl;
         f<< "\tidivq\t%rbx"<<endl;
-    } else if (!op.compare("x")){
+    } else if (!op.compare("call")){
         f<< "\t#call \t"<<lhs<<endl;
     } else if (!op.compare("EQ")){
         f<< "\tsubq\t%rbx,\t%rax"<<endl;
