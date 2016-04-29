@@ -11,10 +11,10 @@ class ThreeAd
 {
 public:
   string result;
-  char op;
+  string op;
   string lhs, rhs;
 
-  ThreeAd(string out, char o, string l, string r)
+  ThreeAd(string out, string o, string l, string r)
     :  result(out), op(o), lhs(l), rhs(r)      {}
 
   void graph(ofstream &f)
@@ -24,35 +24,34 @@ public:
   }
   
   void assembly(ofstream &f){
+    //cout << "'"<<op<<"'"<<endl;
     f<< endl<<"\t #" << result << " := " << lhs << " " 
          << op << " " << rhs << endl;
-    if(op != 'x' && op!= 'p' && !lhs.empty())
+    if(op.compare("x")!=0
+      && op.compare("push")!=0
+      && !lhs.empty()){
       f<< "\tmovq\t"<<lhs<<",\t%rax"<<endl;
-    if(op != 'c' && !rhs.empty())
+    }
+    if(op.compare("c")!=0 && !rhs.empty())
       f<< "\tmovq\t"<<rhs<<",\t%rbx"<<endl;
     
-    switch(op){
-      case 'c':
+    if(!op.compare("c")){
         //f<< "\tmv\t%rax,\t%rbx"<<endl;
-        break;
-      case '+':
+    } else if (!op.compare("+")){
         f<< "\taddq\t%rbx,\t%rax"<<endl;
-        break;
-      case '*':
+    } else if (!op.compare("-")){
+        f<< "\tsubq\t%rbx,\t%rax"<<endl;
+    } else if (!op.compare("*")){
         f<< "\timulq\t%rbx,\t%rax"<<endl;
-        break;
-      case '/':
+    } else if (!op.compare("/")){
         f << "\tcqto"<<endl;
         f<< "\tidivq\t%rbx"<<endl;
-        break;
-      case 'x':
+    } else if (!op.compare("x")){
         f<< "\t#call \t"<<lhs<<endl;
-        break;
-      case '-':
-      case 48:
+    } else if (!op.compare("EQ")){
         f<< "\tsubq\t%rbx,\t%rax"<<endl;
-        break;
     }
+
     if(!result.empty())
       f<< "\tmovq\t%rax,\t"<<result<<endl;
   }

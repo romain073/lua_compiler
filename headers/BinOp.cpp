@@ -6,8 +6,8 @@ using namespace std;
 class BinOp: public Expression
 {
 public:
-char op;
-      BinOp(Expression *l, Expression *r, char t) 
+        string op;
+      BinOp(Expression *l, Expression *r, string t) 
     : Expression(l, r), op(t){}
 
   void namePass(map<Expression*,string> &naming){

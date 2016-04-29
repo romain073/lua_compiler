@@ -10,11 +10,8 @@ class Comparison: public Expression
 {
 public:
 
-enum Operation {EQ,NE,GE,GT,LE,LT};
-//const string opStrings[6] = { "EQ","NE","GE","GT","LE","LT" };
-
-Operation op;
-      Comparison(Expression *l, Expression *r, Operation t) 
+string op;
+      Comparison(Expression *l, Expression *r, string t) 
     : Expression(l, r), op(t){}
 
   void namePass(map<Expression*,string> &naming){
@@ -29,7 +26,7 @@ Operation op;
     if (!this->right->isLeaf()) 
         this->right->emitPass(naming, out);
 
-    ThreeAd a(naming[this], 48+op, naming[this->left], naming[this->right]);
+    ThreeAd a(naming[this], op, naming[this->left], naming[this->right]);
     (*out)->instructions.push_back(a);
   }
 };

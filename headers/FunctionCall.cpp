@@ -26,14 +26,14 @@ public:
         
         for (size_t i = names.size(); i-- > 0; ) {
             // Push the arguments in reverse order
-            (*out)->instructions.push_back(ThreeAd("", 'p', names[i], ""));
+            (*out)->instructions.push_back(ThreeAd("", "push", names[i], ""));
         }
         
         // Push argc
-        (*out)->instructions.push_back(ThreeAd("", 'p', "$"+to_string(names.size()), ""));
+        (*out)->instructions.push_back(ThreeAd("", "push", "$"+to_string(names.size()), ""));
         
         // add the call
-        (*out)->instructions.push_back(ThreeAd("", 'x', naming[this->left], ""));
+        (*out)->instructions.push_back(ThreeAd("", "x", naming[this->left], ""));
     }
 
 };
