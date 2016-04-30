@@ -70,7 +70,7 @@ int main(int argc, char **argv)
     start->dumpAssembly(myfile);
     myfile.close();
     
-    system("as prog.s -o prog.o && ld prog.o -o prog && ./prog; echo \"Process ended with status code $?.\"");
+    system("as prog.s -o prog.o && ld prog.o -o prog && ./prog; echo \"Process exited with code: $?.\"");
     
     // TODO clean parse tree & graphs
     return 0;
