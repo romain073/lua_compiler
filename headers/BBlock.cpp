@@ -91,7 +91,7 @@ static int blockCounter;
     }else{
       if(trueExit == 0 && falseExit == 0){
         // End of the program
-        f << "\tmovq\ta,\t%rbx" << endl
+        f << "\tmovq\t$0,\t%rbx" << endl
           << "\tmovq\t$1,\t%rax" << endl
           << "\tint\t$0x80" << endl;
       }else{

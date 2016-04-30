@@ -11,4 +11,3 @@ print("factorial of ")
 print(n)
 print(" is ")
 print(x)
-a=0
