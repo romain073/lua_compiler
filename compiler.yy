@@ -246,7 +246,7 @@ functioncall: prefixexp args            {$$ = new FunctionCall($1, $2);}
                 
 args: POPEN optexplist PCLOSE           {$$ = $2;}
     | tableconstructor                  {/* $$=(new Node("tableargs"))->add($1); */}
-    | str                            {/* $$=(new Node("str_arg"))->add($1); */}
+    | str                            {$$.push_back(new String($1));}
 
 str: STRING                             { $$=$1.erase($1.length()-1,1).erase(0,1); }
 
