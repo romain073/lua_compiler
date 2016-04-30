@@ -143,9 +143,20 @@ statement   : varlist EQUAL explist             {$$=new Assign($1, $3);}
             | DO block END                      {/* $$=(new Node("do end"))->add($2); */}
             | WHILE exp DO block END            { $$=new While($2, $4); }
             | REPEAT block UNTIL exp            {/* $$=(new Node("repeat"))->add($2)->add($4); */}
-            | IF exp THEN block elseif else END { $$=new If($2,$4,$6, $5);
-            /* $$=(new Node("if"))->add($2)->add($4)->add($5)->add((new Node("else"))->add($6)); */}
-            | FOR NAME EQUAL exp COMMA exp optcommaexp DO block END     {/* $$=(new Node("forequal"))->add((new Node("name", $2)))->add($4)->add($6)->add($7)->add($9); */}
+            | IF exp THEN block elseif else END { $$=new If($2,$4,$6, $5);}
+            | FOR NAME EQUAL exp COMMA exp optcommaexp DO block END
+                                {
+                                    Sequence* s = new Sequence();
+                                    // Initialization
+                                    s->add(new Assign({new Variable($2)}, {$4}));
+                                    Sequence* block = $9;
+                                    // Post incrementation
+                                    block->add(new Assign({new Variable($2)}, {new BinOp(new Constant("1"), new Variable($2), "+")}));
+                                    // Loop
+                                    While* w = new While(new Comparison(new Variable($2), $6, "LE"), block);
+                                    s->add(w);
+                                    $$ = s;
+                                }
             | FOR namelist IN explist DO block END      {/* $$=((new Node("forin")))->add($2)->add($4)->add($6); */}
             | FUNCTION funcname funcbody        {/* $$=(new Node("functiondef"))->add($2)->add($3); */}
             | LOCAL FUNCTION NAME funcbody      {/* $$=(new Node("localfunctiondef", $3))->add($4); */}
