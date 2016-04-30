@@ -45,15 +45,16 @@ public:
         // Push argc
         (*out)->instructions.push_back(ThreeAd("", "push", "$"+to_string(names.size()), ""));
         
-        // add the call
-        (*out)->instructions.push_back(ThreeAd("", "call", ((Variable*)this->left)->name, ""));
-        
-        // pop argc
-        (*out)->instructions.push_back(ThreeAd("", "pop", "empty todo", ""));
-        for(auto name : names){
-            // pop back the parameters
-            (*out)->instructions.push_back(ThreeAd("", "pop", "empty todo", ""));
+        string fnname = ((Variable*)this->left)->name;
+        if(fnname.compare("print") == 0){
+            fnname = "print_nbr";
         }
+        
+        // add the call
+        (*out)->instructions.push_back(ThreeAd("", "call", fnname, ""));
+        
+        // Pop the args & argc
+        (*out)->instructions.push_back(ThreeAd("", "popn", to_string(names.size()+1), ""));
     }
 
 };

@@ -30,7 +30,7 @@ public:
          << op << " " << rhs << endl;
     if(op.compare("call")!=0
       && op.compare("push")!=0
-      && op.compare("pop")!=0
+      && op.compare("popn")!=0
       && op.compare("print")!=0
       && !lhs.empty()){
       f<< "\tmovq\t"<<lhs<<",\t%rax"<<endl;
@@ -50,7 +50,7 @@ public:
         f << "\tcqto"<<endl;
         f<< "\tidivq\t%rbx"<<endl;
     } else if (!op.compare("call")){
-        f<< "\t#call \t"<<lhs<<endl;
+        f<< "\tcall \t"<<lhs<<endl;
     } else if (!op.compare("EQ")){
         f<< "\tsubq\t%rbx,\t%rax"<<endl;
         f<<"\tjz";
@@ -88,6 +88,10 @@ public:
             << "movq $10, _char" << endl
             << "movq $_char, %rcx" << endl
             << "int  $0x80" << endl;
+    } else if (!op.compare("popn")){
+        f   << "addq $"<< 8*stoi(lhs) <<", %rsp"<<endl;
+    } else if (!op.compare("push")){
+        f   << "push "<<lhs<<endl;
     }
 
     if(!result.empty())

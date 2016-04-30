@@ -1,9 +1,14 @@
-a = 13+((22-11)/1)*11
-b = a/3
-if 1==1 then
-a = b-1
+print("enter a number:")
+n = 5
+factorial = 1
+x=1
+i = 2
+while i <= n do
+  x = x * i
+  i = i+1
 end
-while a == 43 do
-    a = a-1
-end
-print("Hello world")
+print("factorial of ")
+print(n)
+print(" is ")
+print(x)
+a=0

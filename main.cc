@@ -53,10 +53,65 @@ int main(int argc, char **argv)
     myfile.open("prog.s");
     myfile << ".section .data"<<endl;
     myfile<<"\t_char:\t.quad 0 # storage for printing"<<endl;
+    myfile<<"\t_count:\t.quad 0 # storage for printing numbers"<<endl;
+    myfile<<"\t_argc:\t.quad 0 # storage for printing numbers"<<endl;
+    myfile<<"\t_idx:\t.quad 0 # storage for printing numbers"<<endl;
     for(string s : Expression::names){
       myfile<<"\t"<<s<<":\t.quad 0"<<endl;
     }
     
+    
+    vector<pair<string, list<string>>> functions;
+
+    functions.push_back(make_pair("print_char", (list<string>){
+      "movq $4, %rax",
+      "movq $1, %rbx",
+      "movq %rcx, _char",
+      "movq $1, %rdx",
+      "movq $_char, %rcx",
+      "int  $0x80",
+      "ret"
+    }));
+    
+    functions.push_back(make_pair("print_nbr", (list<string>){
+      "movq 8(%rsp), %rax",
+      "movq %rax, _argc",
+      "addq $2, _argc",
+      "movq $2, _idx ",
+      "args:",
+      "movq _idx, %rax",
+      "cmpq _argc, %rax",
+      "jnz p",
+      "movq $10, %rcx",
+      "call print_char",
+      "ret",
+      "p:",
+      "movq $8, %rax",
+      "imulq _idx ",
+      "addq %rsp, %rax ",
+      "movq (%rax), %rax ",
+      "movq $0, _count ",
+      "loop:",
+      "incq _count ",
+      "movq $0, %rdx",
+      "movq $10, %rbx",
+      "idivq %rbx",
+      "addq $48, %rdx",
+      "pushq %rdx",
+      "cmpq $0, %rax",
+      "jnz loop",
+      "prloop:",
+      "decq _count",
+      "popq %rcx",
+      "call print_char",
+      "cmpq $0, _count",
+      "jnz prloop",
+      "movq $32, %rcx",
+      "call print_char",
+      "incq _idx",
+      "jmp args"
+    }));
+  
     for(auto s : String::strings){
       myfile <<"\t"<< s.first <<":\t.ascii\t\""<<s.second <<"\""<<endl;
       myfile <<"\t"<< s.first <<"_len = \t. - "<< s.first<<endl;
@@ -65,6 +120,16 @@ int main(int argc, char **argv)
 
     myfile << ".section .text"<<endl;
     myfile << ".globl _start"<<endl;
+    
+    for(auto s : functions){
+      myfile << ".type "<<s.first<<", @function"<<endl;
+    }
+    for(auto s : functions){
+      myfile <<s.first<<":"<<endl;
+      for(auto i : s.second)
+        myfile<<"\t"<<i<<endl;
+    }
+    
     myfile << "_start:"<<endl;
     
     start->dumpAssembly(myfile);
