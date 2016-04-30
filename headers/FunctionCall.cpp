@@ -50,16 +50,21 @@ public:
         
         // Push argc
         (*out)->instructions.push_back(ThreeAd("", "push", "$"+to_string(names.size()), ""));
-        
-        if(fnname.compare("print") == 0){
-            fnname = "print_nbr";
+        string local_fn_name = fnname;
+        if(fnname.compare("print") == 0 || fnname.compare("io.write") == 0){
+            local_fn_name = "print_nbr";
         }
         
         // add the call
-        (*out)->instructions.push_back(ThreeAd("", "call", fnname, ""));
+        (*out)->instructions.push_back(ThreeAd("", "call", local_fn_name, ""));
         
         // Pop the args & argc
         (*out)->instructions.push_back(ThreeAd("", "popn", to_string(names.size()+1), ""));
+        
+        if(fnname.compare("print") == 0){
+            // Add new line if print is called
+            (*out)->instructions.push_back(ThreeAd("", "print_nl", "", ""));
+        }
     }
 
 };

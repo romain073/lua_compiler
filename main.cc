@@ -81,11 +81,7 @@ int main(int argc, char **argv)
       "args:",
       "movq _idx, %rax",
       "cmpq _argc, %rax",
-      "jnz p",
-      "movq $10, %rcx",
-      "call print_char",
-      "ret",
-      "p:",
+      "jz return",
       "movq $8, %rax",
       "imulq _idx ",
       "addq %rsp, %rax ",
@@ -106,10 +102,15 @@ int main(int argc, char **argv)
       "call print_char",
       "cmpq $0, _count",
       "jnz prloop",
+      "incq _idx",
+      "movq _idx, %rax",
+      "cmpq _argc, %rax",
+      "jz return",
       "movq $32, %rcx",
       "call print_char",
-      "incq _idx",
-      "jmp args"
+      "jmp args",
+      "return:",
+      "ret"
     }));
   
     for(auto s : String::strings){
