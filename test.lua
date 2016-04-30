@@ -1,11 +1,9 @@
-print("enter a number:")
-n = 6
-factorial = 1
-x=1
+print "enter a number:"
+n = 42
 for i = 2,n do
-  x = x * i
+  if n%i==0 then
+    io.write(i, n)
+    io.write(" is a factor of ")
+    print(n)
+  end
 end
-print("factorial of ")
-print(n)
-print(" is ")
-print(x)
