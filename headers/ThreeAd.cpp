@@ -49,6 +49,10 @@ public:
     } else if (!op.compare("/")){
         f << "\tcqto"<<endl;
         f<< "\tidivq\t%rbx"<<endl;
+    } else if (!op.compare("%")){
+        f << "\tcqto"<<endl;
+        f<< "\tidivq\t%rbx"<<endl;
+        f<< "\tmovq\t%rdx,\t%rax"<<endl;
     } else if (!op.compare("call")){
         f<< "\tcall \t"<<lhs<<endl;
     } else if (!op.compare("EQ")){
