@@ -84,9 +84,9 @@ public:
             << "movq $1, %rbx" << endl
             << "movq $"<< lhs <<"_len, %rdx" << endl
             << "movq $"<< lhs <<", %rcx" << endl
-            << "int  $0x80" << endl
-            
-            << "movq $4, %rax"<<endl
+            << "int  $0x80" << endl;
+    } else if (!op.compare("print_nl")){
+        f   << "movq $4, %rax"<<endl
             << "movq $1, %rbx" << endl
             << "movq $1, %rdx" << endl
             << "movq $10, _char" << endl

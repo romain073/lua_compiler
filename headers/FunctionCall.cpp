@@ -29,6 +29,10 @@ public:
                 string name = arg->convert(out);
                 (*out)->instructions.push_back(ThreeAd("", "print", name, ""));
             }
+            if(fnname.compare("print") == 0){
+                // Add new line if print is called
+                (*out)->instructions.push_back(ThreeAd("", "print_nl", "", ""));
+            }
             return;
         }
         
