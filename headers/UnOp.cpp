@@ -8,7 +8,9 @@ class UnOp: public Expression
 public:
 string op;
       UnOp(Expression *l, string t) 
-    : Expression(l, NULL), op(t){}
+    : Expression(l, NULL), op(t){
+      type = Expression::types::UNOP;
+    }
 
   void namePass(map<Expression*,string> &naming){
         naming[this] = newName();

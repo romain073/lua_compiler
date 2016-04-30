@@ -8,7 +8,10 @@ class BinOp: public Expression
 public:
         string op;
       BinOp(Expression *l, Expression *r, string t) 
-    : Expression(l, r), op(t){}
+    : Expression(l, r), op(t){
+        
+      type = Expression::types::BINOP;
+    }
 
   void namePass(map<Expression*,string> &naming){
         naming[this] = newName();

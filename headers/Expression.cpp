@@ -11,11 +11,15 @@ using namespace std;
 class Expression
 {
 public:
+  enum types {EXPRESSION, BINOP, CONSTANT, VARIABLE, FUNCTIONCALL, STRING, UNOP};
+  types type;
   class Expression *left, *right;
   static int nameCounter;
   static set<string> names;
   Expression(Expression *l, Expression *r) 
-    : left(l), right(r){}
+    : left(l), right(r){
+      type = EXPRESSION;
+    }
 
   virtual bool isLeaf(){
     return left == NULL && right == NULL;
@@ -45,6 +49,10 @@ public:
     this->emitPass(naming, out);
     
     return naming[this];
+  }
+  
+  bool memberOf(types t){
+    return type == t;
   }
 };
 

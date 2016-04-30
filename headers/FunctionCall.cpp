@@ -11,7 +11,9 @@ class FunctionCall: public Expression
 public:
     vector<Expression*> args;
       FunctionCall(Expression *name, vector<Expression*> args) 
-    : Expression(name, NULL), args(args){}
+    : Expression(name, NULL), args(args){
+      type = Expression::types::FUNCTIONCALL;
+    }
     
     void namePass(map<Expression*,string> &naming){
         //this->left->namePass(naming);
