@@ -20,8 +20,10 @@ public:
     
     void emitPass(map<Expression*,string> &naming, BBlock** out){
         
+        string fnname = ((Variable*)this->left)->name;
                 
-        if(((Variable*)this->left)->name.compare("print") == 0 && args.front()->memberOf(Expression::types::STRING)){
+        if((fnname.compare("print") == 0 || fnname.compare("io.write") == 0)
+                && args.front()->memberOf(Expression::types::STRING)){
             // assume that if the first arg is a string, the others are as well.
             for(auto arg : args){
                 string name = arg->convert(out);
@@ -45,7 +47,6 @@ public:
         // Push argc
         (*out)->instructions.push_back(ThreeAd("", "push", "$"+to_string(names.size()), ""));
         
-        string fnname = ((Variable*)this->left)->name;
         if(fnname.compare("print") == 0){
             fnname = "print_nbr";
         }

@@ -191,7 +191,10 @@ else: /* empty */                               { $$=NULL;}
 
 var : NAME                                      {$$=new Variable($1);}
     | prefixexp SBRACKETOPEN exp SBRACKETCLOSE  {/* $$=(new Node("tableretrieve"))->add($1)->add($3); */}
-    | prefixexp DOT NAME                        {/* $$=(new Node("propretrieve"))->add($1)->add(new Node("Var", $3)); */}
+    | prefixexp DOT NAME                        {
+                                                    Variable* v = (Variable*) $1;
+                                                    $$ = new Variable(v->name + "." + $3);
+                                                }
 
 varlist : var                                   {$$.push_back($1);}
         | varlist COMMA var                     {$$=$1;$$.push_back($3);}
