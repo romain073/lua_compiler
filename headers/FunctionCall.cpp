@@ -16,10 +16,20 @@ public:
     }
     
     void namePass(map<Expression*,string> &naming){
-        //this->left->namePass(naming);
     }
     
     void emitPass(map<Expression*,string> &naming, BBlock** out){
+        
+                
+        if(((Variable*)this->left)->name.compare("print") == 0 && args.front()->memberOf(Expression::types::STRING)){
+            // assume that if the first arg is a string, the others are as well.
+            for(auto arg : args){
+                string name = arg->convert(out);
+                (*out)->instructions.push_back(ThreeAd("", "print", name, ""));
+            }
+            return;
+        }
+        
         vector<string> names;
         for(auto arg : args){
             // Get the names and compute the arguments in the right order

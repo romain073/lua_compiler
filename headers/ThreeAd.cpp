@@ -31,6 +31,7 @@ public:
     if(op.compare("call")!=0
       && op.compare("push")!=0
       && op.compare("pop")!=0
+      && op.compare("print")!=0
       && !lhs.empty()){
       f<< "\tmovq\t"<<lhs<<",\t%rax"<<endl;
     }
@@ -74,11 +75,24 @@ public:
         f<< "\tsubq\t%rax,\t%rbx"<<endl;
         f<<"\tjs";
         return true;
+    } else if (!op.compare("print")){
+        f   << "movq $4, %rax"<<endl
+            << "movq $1, %rbx" << endl
+            << "movq $"<< lhs <<"_len, %rdx" << endl
+            << "movq $"<< lhs <<", %rcx" << endl
+            << "int  $0x80" << endl
+            
+            << "movq $4, %rax"<<endl
+            << "movq $1, %rbx" << endl
+            << "movq $1, %rdx" << endl
+            << "movq $10, _char" << endl
+            << "movq $_char, %rcx" << endl
+            << "int  $0x80" << endl;
     }
 
     if(!result.empty())
       f<< "\tmovq\t%rax,\t"<<result<<endl;
-      return false;
+    return false;
   }
 
   
