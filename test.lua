@@ -7,3 +7,9 @@ for i = 2,n do
     print(n)
   end
 end
+
+a = 1
+repeat 
+a = 1+a
+until a==5
+print(a)

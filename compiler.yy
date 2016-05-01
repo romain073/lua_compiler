@@ -14,6 +14,7 @@
     #include "headers/Comparison.cpp"
     #include "headers/If.cpp"
     #include "headers/While.cpp"
+    #include "headers/Repeat.cpp"
     #include "headers/Call.cpp"
     #include "headers/String.cpp"
 }
@@ -142,7 +143,7 @@ statement   : varlist EQUAL explist             {$$=new Assign($1, $3);}
             | functioncall                      {$$=new Call($1);}
             | DO block END                      {/* $$=(new Node("do end"))->add($2); */}
             | WHILE exp DO block END            { $$=new While($2, $4); }
-            | REPEAT block UNTIL exp            {/* $$=(new Node("repeat"))->add($2)->add($4); */}
+            | REPEAT block UNTIL exp            { $$=new Repeat($4, $2); }
             | IF exp THEN block elseif else END { $$=new If($2,$4,$6, $5);}
             | FOR NAME EQUAL exp COMMA exp optcommaexp DO block END
                                 {
