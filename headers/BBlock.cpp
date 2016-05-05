@@ -5,6 +5,7 @@
 
 #include <list>
 #include "ThreeAd.cpp"
+#include "Environment.cpp"
 #include<iostream>
 #include<sstream>
 #include<fstream>
@@ -77,11 +78,11 @@ static int blockCounter;
     
 }
   
-  void assembly(ofstream &f){
+  void assembly(ofstream &f, Environment &env){
     f << this->label <<":"<< endl;
     bool endblock;
     for(auto i : instructions) {
-      endblock = i.assembly(f);
+      endblock = i.assembly(f, env);
     }
     if(endblock){
       f<<"\t"<< trueExit->label << endl;
@@ -100,7 +101,7 @@ static int blockCounter;
     }
   }
   
-  void dumpAssembly(ofstream &f){
+  void dumpAssembly(ofstream &f, Environment &env){
     set<BBlock *> done, todo;
     todo.insert(this);
     while(todo.size()>0)
@@ -110,7 +111,7 @@ static int blockCounter;
       BBlock *next = *first;
       todo.erase(first);
   
-      next->assembly(f);
+      next->assembly(f, env);
       done.insert(next);
       if(next->trueExit!=NULL && done.find(next->trueExit)==done.end())
         todo.insert(next->trueExit);

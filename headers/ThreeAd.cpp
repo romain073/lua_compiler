@@ -5,6 +5,7 @@
 #include<iostream>
 #include<sstream>
 #include <fstream>
+#include "Environment.cpp"
 using namespace std;
 
 class ThreeAd
@@ -24,7 +25,7 @@ public:
   }
   
   // Returns true if the last instruction is the beginning of a jump
-  bool assembly(ofstream &f){
+  bool assembly(ofstream &f, Environment &env){
     //cout << "'"<<op<<"'"<<endl;
     f<< endl<<"\t #" << result << " := " << lhs << " " 
          << op << " " << rhs << endl;
@@ -32,14 +33,19 @@ public:
       && op.compare("push")!=0
       && op.compare("popn")!=0
       && op.compare("print")!=0
+      && op.compare("string")!=0
       && !lhs.empty()){
       f<< "\tmovq\t"<<lhs<<",\t%rax"<<endl;
     }
     if(op.compare("c")!=0 && !rhs.empty())
       f<< "\tmovq\t"<<rhs<<",\t%rbx"<<endl;
-    
+      
+    if(!result.empty())
+        env.add(result, "int", "0");
+        
     if(!op.compare("c")){
         //f<< "\tmv\t%rax,\t%rbx"<<endl;
+        
     } else if (!op.compare("+")){
         f<< "\taddq\t%rbx,\t%rax"<<endl;
     } else if (!op.compare("-")){
@@ -80,11 +86,18 @@ public:
         f<<"\tjs";
         return true;
     } else if (!op.compare("print")){
-        f   << "movq $4, %rax"<<endl
+        string type = env.getType(lhs);
+        if(!type.compare("string")){
+            f   << "movq $4, %rax"<<endl
             << "movq $1, %rbx" << endl
-            << "movq $"<< lhs <<"_len, %rdx" << endl
-            << "movq $"<< lhs <<", %rcx" << endl
+            << "movq "<< lhs <<", %rdx" << endl
+            << "movq $"<< lhs <<"_s, %rcx" << endl
             << "int  $0x80" << endl;
+        } else {
+            cout <<"print unknown type"<<endl;
+            exit(42);
+        }
+
     } else if (!op.compare("print_nl")){
         f   << "movq $4, %rax"<<endl
             << "movq $1, %rbx" << endl
@@ -96,6 +109,10 @@ public:
         f   << "addq $"<< 8*stoi(lhs) <<", %rsp"<<endl;
     } else if (!op.compare("push")){
         f   << "push "<<lhs<<endl;
+    } else if (!op.compare("string")){
+        
+        env.add(result, "string", lhs);
+        return false;
     }
 
     if(!result.empty())

@@ -15,7 +15,6 @@ public:
   types type;
   class Expression *left, *right;
   static int nameCounter;
-  static set<string> names;
   Expression(Expression *l, Expression *r) 
     : left(l), right(r){
       type = EXPRESSION;
@@ -25,12 +24,10 @@ public:
     return left == NULL && right == NULL;
   }
   
-  static string newName(bool variable = true)
+  static string newName()
   {
     stringstream result;
     result << "_t" << Expression::nameCounter++;
-    if(variable)
-      names.insert(result.str());
     return result.str();
   }
   

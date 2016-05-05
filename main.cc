@@ -7,6 +7,7 @@
 #include "headers/Variable.cpp"
 #include "headers/BBlock.cpp"
 #include "headers/String.cpp"
+#include "headers/Environment.cpp"
 #include <fstream>
 #include <string.h>
 extern Statement* root;
@@ -17,8 +18,6 @@ void yy::parser::error(string const&err)
 }
 
 int Expression::nameCounter = 0;
-set<string> Expression::names;
-vector<pair<string,string>> String::strings;
 int BBlock::blockCounter = 0;
 int main(int argc, char **argv)
 {
@@ -56,10 +55,6 @@ int main(int argc, char **argv)
     myfile<<"\t_count:\t.quad 0 # storage for printing numbers"<<endl;
     myfile<<"\t_argc:\t.quad 0 # storage for printing numbers"<<endl;
     myfile<<"\t_idx:\t.quad 0 # storage for printing numbers"<<endl;
-    for(string s : Expression::names){
-      myfile<<"\t"<<s<<":\t.quad 0"<<endl;
-    }
-    
     
     vector<pair<string, list<string>>> functions;
 
@@ -113,12 +108,6 @@ int main(int argc, char **argv)
       "ret"
     }));
   
-    for(auto s : String::strings){
-      myfile <<"\t"<< s.first <<":\t.ascii\t\""<<s.second <<"\""<<endl;
-      myfile <<"\t"<< s.first <<"_len = \t. - "<< s.first<<endl;
-
-    }
-
     myfile << ".section .text"<<endl;
     myfile << ".globl _start"<<endl;
     
@@ -132,10 +121,24 @@ int main(int argc, char **argv)
     }
     
     myfile << "_start:"<<endl;
+    Environment env;
+    start->dumpAssembly(myfile, env);
     
-    start->dumpAssembly(myfile);
+    myfile << ".section .data"<<endl;
+    for(auto i : env.getEnv()){
+      string name(i.first), type(i.second.first), value(i.second.second);
+      if(!type.compare("string")){
+        
+        myfile <<"\t"<< name <<":\t.quad "<< value.length() <<endl;
+        myfile <<"\t"<< name <<"_s:\t.ascii\t\""<<value <<"\""<<endl;
+      } else if(!type.compare("int")){
+        myfile <<"\t"<< name <<":\t.quad 0" <<endl;
+        
+      }
+      //cout << name << type << value;
+    }
+    
     myfile.close();
-    
     system("as prog.s -o prog.o && ld prog.o -o prog && ./prog; echo \"Process exited with code: $?.\"");
     
     // TODO clean parse tree & graphs
