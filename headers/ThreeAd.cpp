@@ -30,9 +30,9 @@ public:
     f<< endl<<"\t #" << result << " := " << lhs << " " 
          << op << " " << rhs << endl;
     if(op.compare("call")!=0
-      && op.compare("push")!=0
-      && op.compare("popn")!=0
+      && op.compare("argv")!=0
       && op.compare("print")!=0
+      && op.compare("c")!=0
       && op.compare("string")!=0
       && !lhs.empty()){
       f<< "\tmovq\t"<<lhs<<",\t%rax"<<endl;
@@ -40,10 +40,20 @@ public:
     if(op.compare("c")!=0 && !rhs.empty())
       f<< "\tmovq\t"<<rhs<<",\t%rbx"<<endl;
       
-    if(!result.empty())
+    if(!result.empty() && !env.exists(result))
         env.add(result, "int", "0");
         
     if(!op.compare("c")){
+        string type = env.getType(rhs);
+        if(!type.compare("string")){
+            env.add(result, "string_ptr", "0");
+            f<< "\tmovq\t$"<<lhs<<",\t%rax"<<endl;
+        }
+        else{
+            if(!env.exists(result))
+                env.add(result, type, "0"); // Override the type with the one of the rhs
+            f<< "\tmovq\t"<<lhs<<",\t%rax"<<endl;
+        }
         //f<< "\tmv\t%rax,\t%rbx"<<endl;
         
     } else if (!op.compare("+")){
@@ -60,7 +70,34 @@ public:
         f<< "\tidivq\t%rbx"<<endl;
         f<< "\tmovq\t%rdx,\t%rax"<<endl;
     } else if (!op.compare("call")){
-        f<< "\tcall \t"<<lhs<<endl;
+        int argc = env.argc();
+        
+        vector<string> types = env.argTypes();
+        f << "\t#"<<lhs<<"(";
+        for(auto i : types){
+            f<<i<<" ";
+        }
+        f<<")"<<endl;
+        
+        // Push argc
+        f<< "\tpushq $"<<to_string(argc)<<endl;
+        
+        if(lhs == "print"){
+            if(types[0] == "int"){
+                f<< "\tcall \tprint_nbr"<<endl;
+            } else {
+                f<< "\tcall \tprint_str"<<endl;
+            }
+        }else {
+            f<< "\tcall \t"<<lhs<<endl;
+        }
+        
+        
+        env.clearArgs();
+        // Pop argv & argc
+        f << "\taddq\t$"<< 8*(argc+1) <<",\t%rsp"<<endl;
+        
+        
     } else if (!op.compare("EQ")){
         f<< "\tsubq\t%rbx,\t%rax"<<endl;
         f<<"\tjz";
@@ -93,6 +130,14 @@ public:
             << "movq "<< lhs <<", %rdx" << endl
             << "movq $"<< lhs <<"_s, %rcx" << endl
             << "int  $0x80" << endl;
+        } else if(!type.compare("string_ptr")){
+            env.add(result, "string_ptr", "0");
+            f  << "movq "<< lhs <<", %rax" << endl
+            << "movq (%rax), %rdx" << endl
+            << "movq 8(%rax), %rcx" << endl
+            << "movq $4, %rax"<<endl
+            << "movq $1, %rbx" << endl
+            << "int  $0x80" << endl;
         } else {
             cout <<"print unknown type"<<endl;
             exit(42);
@@ -105,10 +150,21 @@ public:
             << "movq $10, _char" << endl
             << "movq $_char, %rcx" << endl
             << "int  $0x80" << endl;
-    } else if (!op.compare("popn")){
-        f   << "addq $"<< 8*stoi(lhs) <<", %rsp"<<endl;
-    } else if (!op.compare("push")){
-        f   << "push "<<lhs<<endl;
+    } else if ( !op.compare("argv")){
+        string type(env.getType(lhs));
+        if(!type.compare("")){
+            type = "int";
+        } 
+        if(!type.compare("string")){
+            type="string_ptr";
+            
+            f   << "push $"<<lhs<<endl;
+        }else{
+            
+            f   << "push "<<lhs<<endl;
+        }
+        
+        env.addArg(type);
     } else if (!op.compare("string")){
         
         env.add(result, "string", lhs);

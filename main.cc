@@ -108,6 +108,34 @@ int main(int argc, char **argv)
       "ret"
     }));
   
+      functions.push_back(make_pair("print_str", (list<string>){
+      "movq 8(%rsp), %rax",
+"movq %rax, _argc",
+"addq $2, _argc",
+"movq $2, _idx ",
+"argsprintstr:",
+"movq _idx, %rax",
+"cmpq _argc, %rax",
+"jz return",
+"movq $8, %rax",
+"imulq _idx",
+"addq %rsp, %rax",
+"movq (%rax), %rax",
+"movq (%rax), %rdx",
+"addq $8, %rax",
+"movq %rax, %rcx",
+"movq $4, %rax",
+"movq $1, %rbx",
+"int  $0x80",
+"incq _idx",
+"movq _idx, %rax",
+"cmpq _argc, %rax",
+"jz return",
+"movq $32, %rcx",
+"call print_char",
+"jmp argsprintstr"
+    }));
+  
     myfile << ".section .text"<<endl;
     myfile << ".globl _start"<<endl;
     
@@ -131,7 +159,7 @@ int main(int argc, char **argv)
         
         myfile <<"\t"<< name <<":\t.quad "<< value.length() <<endl;
         myfile <<"\t"<< name <<"_s:\t.ascii\t\""<<value <<"\""<<endl;
-      } else if(!type.compare("int")){
+      } else if(!type.compare("int") || !type.compare("string_ptr")){
         myfile <<"\t"<< name <<":\t.quad 0" <<endl;
         
       }

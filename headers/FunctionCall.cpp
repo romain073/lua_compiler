@@ -21,7 +21,7 @@ public:
     void emitPass(map<Expression*,string> &naming, BBlock** out){
         
         string fnname = ((Variable*)this->left)->name;
-                
+        /*
         if((fnname.compare("print") == 0 || fnname.compare("io.write") == 0)
                 && args.front()->memberOf(Expression::types::STRING)){
             // assume that if the first arg is a string, the others are as well.
@@ -35,6 +35,7 @@ public:
             }
             return;
         }
+        */
         
         vector<string> names;
         for(auto arg : args){
@@ -45,21 +46,16 @@ public:
         
         for (size_t i = names.size(); i-- > 0; ) {
             // Push the arguments in reverse order
-            (*out)->instructions.push_back(ThreeAd("", "push", names[i], ""));
+            (*out)->instructions.push_back(ThreeAd("", "argv", names[i], ""));
         }
         
-        // Push argc
-        (*out)->instructions.push_back(ThreeAd("", "push", "$"+to_string(names.size()), ""));
         string local_fn_name = fnname;
         if(fnname.compare("print") == 0 || fnname.compare("io.write") == 0){
-            local_fn_name = "print_nbr";
+            local_fn_name = "print";
         }
         
         // add the call
         (*out)->instructions.push_back(ThreeAd("", "call", local_fn_name, ""));
-        
-        // Pop the args & argc
-        (*out)->instructions.push_back(ThreeAd("", "popn", to_string(names.size()+1), ""));
         
         if(fnname.compare("print") == 0){
             // Add new line if print is called
