@@ -49,8 +49,10 @@ public:
         if(!type.compare("string")){
             env.add(result, "string_ptr", "0");
             f<< "\tmovq\t$"<<lhs<<",\t%rax"<<endl;
-        }
-        else{
+        } else if(!type.compare("table")){
+            env.add(result, "table_ptr", "0");
+            f<< "\tmovq\t$"<<lhs<<",\t%rax"<<endl;
+        } else {
             if(!env.exists(result))
                 env.add(result, type, "0"); // Override the type with the one of the rhs
             f<< "\tmovq\t"<<lhs<<",\t%rax"<<endl;
