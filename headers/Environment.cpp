@@ -12,7 +12,6 @@ class Environment
     Environment() { }
     
     void add(string name, string type, string value){
-        cout << "Env added "<< name << type<<value<<endl;
         env[name] = make_pair(type, value);
     }
     
