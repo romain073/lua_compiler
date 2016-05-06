@@ -72,6 +72,8 @@ public:
         f << "\tcqto"<<endl;
         f<< "\tidivq\t%rbx"<<endl;
         f<< "\tmovq\t%rdx,\t%rax"<<endl;
+    } else if (!op.compare("#")){
+        f << "\tmovq\t(%rax), %rax"<<endl;
     } else if (!op.compare("tableaccess")){
         f << "\tincq %rbx" << endl
         << "\timulq $8, %rbx" << endl
