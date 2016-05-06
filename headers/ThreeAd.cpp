@@ -72,6 +72,19 @@ public:
         f << "\tcqto"<<endl;
         f<< "\tidivq\t%rbx"<<endl;
         f<< "\tmovq\t%rdx,\t%rax"<<endl;
+    } else if (!op.compare("tableaccess")){
+        f << "\t#tableaccess"<<endl;
+        f << "movq "<<rhs<<", %rcx"<<endl
+        << "incq %rcx" << endl
+        << "movq "<<lhs<<", %rax" << endl
+        << "imulq $8, %rcx" << endl
+        << "addq %rcx, %rax" << endl
+        << "movq (%rax), %rax"<<endl;
+	
+	
+	
+        
+        
     } else if (!op.compare("call")){
         int argc = env.argc();
         
