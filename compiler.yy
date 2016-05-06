@@ -18,6 +18,7 @@
     #include "headers/Call.cpp"
     #include "headers/String.cpp"
     #include "headers/Table.cpp"
+    #include "headers/TableAccess.cpp"
 }
 
 %code{
@@ -192,7 +193,7 @@ else: /* empty */                               { $$=NULL;}
     | ELSE block                                { $$=$2; }
 
 var : NAME                                      {$$=new Variable($1);}
-    | prefixexp SBRACKETOPEN exp SBRACKETCLOSE  {/* $$=(new Node("tableretrieve"))->add($1)->add($3); */}
+    | prefixexp SBRACKETOPEN exp SBRACKETCLOSE  {$$ = new TableAccess($1, $3);}
     | prefixexp DOT NAME                        {
                                                     Variable* v = (Variable*) $1;
                                                     $$ = new Variable(v->name + "." + $3);
