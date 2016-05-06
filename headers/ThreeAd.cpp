@@ -34,6 +34,7 @@ public:
       && op.compare("print")!=0
       && op.compare("c")!=0
       && op.compare("string")!=0
+      && op.compare("table")!=0
       && !lhs.empty()){
       f<< "\tmovq\t"<<lhs<<",\t%rax"<<endl;
     }
@@ -166,8 +167,10 @@ public:
         
         env.addArg(type);
     } else if (!op.compare("string")){
-        
         env.add(result, "string", lhs);
+        return false;
+    } else if (!op.compare("table")){
+        env.add(result, "table", lhs);
         return false;
     }
 

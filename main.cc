@@ -10,6 +10,7 @@
 #include "headers/Environment.cpp"
 #include <fstream>
 #include <string.h>
+#include <algorithm>
 extern Statement* root;
 extern FILE *yyin;
 void yy::parser::error(string const&err)
@@ -162,6 +163,10 @@ int main(int argc, char **argv)
       } else if(!type.compare("int") || !type.compare("string_ptr")){
         myfile <<"\t"<< name <<":\t.quad 0" <<endl;
         
+      }else if(!type.compare("table")){
+        int size = count(value.begin(), value.end(), ',') + 1;
+        myfile <<"\t"<< name <<":\t.quad "<< size <<endl;
+        myfile <<"\t"<< name <<"_a:\t.quad "<< value <<endl;
       }
       //cout << name << type << value;
     }

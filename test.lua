@@ -1,3 +1,4 @@
+b = {1,2,3}
 print "enter a number:"
 n = 42
 for i = 2,n do
