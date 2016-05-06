@@ -73,13 +73,10 @@ public:
         f<< "\tidivq\t%rbx"<<endl;
         f<< "\tmovq\t%rdx,\t%rax"<<endl;
     } else if (!op.compare("tableaccess")){
-        f << "\t#tableaccess"<<endl;
-        f << "movq "<<rhs<<", %rcx"<<endl
-        << "incq %rcx" << endl
-        << "movq "<<lhs<<", %rax" << endl
-        << "imulq $8, %rcx" << endl
-        << "addq %rcx, %rax" << endl
-        << "movq (%rax), %rax"<<endl;
+        f << "\tincq %rbx" << endl
+        << "\timulq $8, %rbx" << endl
+        << "\taddq %rbx, %rax" << endl
+        << "\tmovq (%rax), %rax"<<endl;
 	
 	
 	
