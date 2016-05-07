@@ -1,16 +1,15 @@
-b = {1,2,3}
-print "enter a number:"
-n = 42
-for i = 2,n do
-  if n%i==0 then
-    io.write(i)
-    io.write(" is a factor of ")
-    print(n)
+list = { 5, 6, 1, 2, 9, 14, 2, 15, 6, 7, 8, 97 }
+itemCount=#list
+repeat
+  hasChanged = false
+  itemCount=itemCount - 1
+  for i = 1, itemCount do
+    if list[i] > list[i + 1] then
+      list[i], list[i + 1] = list[i + 1], list[i]
+      hasChanged = true
+    end
   end
+until hasChanged == false
+for i = 1,#list do
+  print (list[i])
 end
-
-a = 1
-repeat 
-a = 1+a
-until a==5
-print(a)
