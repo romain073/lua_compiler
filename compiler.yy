@@ -202,8 +202,8 @@ var : NAME                                      {$$=new Variable($1);}
 varlist : var                                   {$$.push_back($1);}
         | varlist COMMA var                     {$$=$1;$$.push_back($3);}
         
-exp : TRUE                      {/* $$=new Node("value", "true"); */}
-    | FALSE                     {/* $$=new Node("value", "false"); */}
+exp : TRUE                      { $$=new Constant("1"); }
+    | FALSE                     { $$=new Constant("0"); }
     | NIL                       {/* $$=new Node("value", "nil"); */}
     | NUMBER                    { $$=new Constant($1); }
     | str                       { $$=new String($1); }  
