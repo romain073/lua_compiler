@@ -262,7 +262,7 @@ optexplist  : /* empty */               {}
 				
 tableconstructor : CBRACKETOPEN optfieldlist CBRACKETCLOSE { $$=new Table($2); }
 
-optfieldlist    : /* empty */                       
+optfieldlist    : /* empty */                       {}  
                 | fieldlist optfieldsep             { $$ = $1; }
                 
 optfieldsep    : /* empty */ 
