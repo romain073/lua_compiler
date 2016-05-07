@@ -8,10 +8,12 @@ using namespace std;
 class Environment
 {
     public:
-    map<string, pair<string, string>> env;
+    enum type {NONE, INT, STRING, STRING_PTR, ARRAY, ARRAY_PTR, CELL_PTR};
+    map<string, pair<type, string>> env;
     Environment() { }
     
-    void add(string name, string type, string value){
+    void add(string name, type type, string value){
+        cout << name << " " << type << " " << value<<endl;
         env[name] = make_pair(type, value);
     }
     
@@ -19,17 +21,17 @@ class Environment
         return env.find(name) != env.end();
     }
     
-    map<string, pair<string, string>> getEnv(){
+    map<string, pair<type, string>> getEnv(){
         return env;
     }
     
-    string getType(string var){
+    type getType(string var){
         return env[var].first;
     }
     
-    vector<string> argtypes;
+    vector<type> argtypes;
     
-    void addArg(string type){
+    void addArg(type type){
         argtypes.push_back(type);
     }
     
@@ -37,7 +39,7 @@ class Environment
         return argtypes.size();
     }
     
-    vector<string> argTypes(){
+    vector<type> argTypes(){
         return argtypes;
     }
     

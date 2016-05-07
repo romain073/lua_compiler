@@ -155,15 +155,18 @@ int main(int argc, char **argv)
     
     myfile << ".section .data"<<endl;
     for(auto i : env.getEnv()){
-      string name(i.first), type(i.second.first), value(i.second.second);
-      if(!type.compare("string")){
-        
+      string name(i.first), value(i.second.second);
+      Environment::type type = i.second.first;
+      if(type == Environment::type::STRING){
         myfile <<"\t"<< name <<":\t.quad "<< value.length() <<endl;
         myfile <<"\t"<< name <<"_s:\t.ascii\t\""<<value <<"\""<<endl;
-      } else if(!type.compare("int") || !type.compare("string_ptr")|| !type.compare("table_ptr")|| !type.compare("cell_ptr")){
+      } else if(type == Environment::type::INT || 
+          type == Environment::type::STRING_PTR || 
+          type == Environment::type::ARRAY_PTR || 
+          type == Environment::type::CELL_PTR){
         myfile <<"\t"<< name <<":\t.quad 0" <<endl;
         
-      }else if(!type.compare("table")){
+      }else if(type == Environment::type::ARRAY){
         int size = count(value.begin(), value.end(), ',') + 1;
         myfile <<"\t"<< name <<":\t.quad "<< size <<endl;
         myfile <<"\t"<< name <<"_a:\t.quad "<< value <<endl;

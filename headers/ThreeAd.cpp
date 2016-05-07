@@ -30,17 +30,17 @@ public:
     f<< endl<<"\t #" << result << " := " << lhs << " " 
          << op << " " << rhs << endl;
 
-    if(!env.getType(lhs).compare("cell_ptr")){
+    if(env.getType(lhs) == Environment::type::CELL_PTR){
       f<< "\tmovq\t("<<lhs<<"),\t%rax"<<endl; // Dereference, we want the value of lhs
       f<< "\tmovq\t(%rax),\t%rax"<<endl;
       f<< "\tmovq\t%rax,\t"<<lhs<<endl;
-      env.add(lhs, "int", "0");
+      env.add(lhs, Environment::type::INT, "0");
     }
-    if(!env.getType(rhs).compare("cell_ptr")){
+    if(env.getType(rhs) == Environment::type::CELL_PTR){
       f<< "\tmovq\t("<<rhs<<"),\t%rax"<<endl; // Dereference, we want the value of rhs
       f<< "\tmovq\t(%rax),\t%rax"<<endl;
       f<< "\tmovq\t%rax,\t"<<rhs<<endl;
-      env.add(rhs, "int", "0");
+      env.add(rhs, Environment::type::INT, "0");
     }
 
     if(op.compare("call")!=0
@@ -58,22 +58,22 @@ public:
 
       
     if(!result.empty() && !env.exists(result))
-        env.add(result, "int", "0");
+        env.add(result, Environment::type::INT, "0");
         
     if(!op.compare("c")){
-        string type = env.getType(lhs);
-        if(!type.compare("string")){
-            env.add(result, "string_ptr", "0");
+        Environment::type type = env.getType(lhs);
+        if(type == Environment::type::STRING){
+            env.add(result, Environment::type::STRING_PTR, "0");
             f<< "\tmovq\t$"<<lhs<<",\t%rax"<<endl;
-        } else if(!type.compare("table")){
-            env.add(result, "table_ptr", "0");
+        } else if(type == Environment::type::ARRAY){
+            env.add(result, Environment::type::ARRAY_PTR, "0");
             f<< "\tmovq\t$"<<lhs<<",\t%rax"<<endl;
         } else {
             if(!env.exists(result))
                 env.add(result, type, "0"); // Override the type with the one of the lhs
             f<< "\tmovq\t"<<lhs<<",\t%rax"<<endl;
         }
-        if(!env.getType(result).compare("cell_ptr")){
+        if(env.getType(result) == Environment::type::CELL_PTR){
             f<< "\tmovq\t"<<result<<",\t%rcx"<<endl;
             f<< "\tmovq\t%rax,\t(%rcx)"<<endl; // Move the result to the pointed cell
             return false;
@@ -97,11 +97,11 @@ public:
     } else if (!op.compare("tableaccess")){
         f << "\timulq $8, %rbx" << endl
         << "\taddq %rbx, %rax" << endl;
-        env.add(result, "cell_ptr", "0");
+        env.add(result, Environment::type::CELL_PTR, "0");
     } else if (!op.compare("call")){
         int argc = env.argc();
         
-        vector<string> types = env.argTypes();
+        vector<Environment::type> types = env.argTypes();
         f << "\t#"<<lhs<<"(";
         for(auto i : types){
             f<<i<<" ";
@@ -112,7 +112,7 @@ public:
         f<< "\tpushq $"<<to_string(argc)<<endl;
         
         if(lhs == "print"){
-            if(types[0] == "int"){
+            if(types[0] == Environment::type::INT){
                 f<< "\tcall \tprint_nbr"<<endl;
             } else {
                 f<< "\tcall \tprint_str"<<endl;
@@ -152,15 +152,15 @@ public:
         f<<"\tjs";
         return true;
     } else if (!op.compare("print")){
-        string type = env.getType(lhs);
-        if(!type.compare("string")){
+        Environment::type type = env.getType(lhs);
+        if(type==Environment::type::STRING){
             f   << "movq $4, %rax"<<endl
             << "movq $1, %rbx" << endl
             << "movq "<< lhs <<", %rdx" << endl
             << "movq $"<< lhs <<"_s, %rcx" << endl
             << "int  $0x80" << endl;
-        } else if(!type.compare("string_ptr")){
-            env.add(result, "string_ptr", "0");
+        } else if(type==Environment::type::STRING_PTR){
+            env.add(result, Environment::type::STRING_PTR, "0");
             f  << "movq "<< lhs <<", %rax" << endl
             << "movq (%rax), %rdx" << endl
             << "movq 8(%rax), %rcx" << endl
@@ -180,25 +180,23 @@ public:
             << "movq $_char, %rcx" << endl
             << "int  $0x80" << endl;
     } else if ( !op.compare("argv")){
-        string type(env.getType(lhs));
-        if(!type.compare("")){
-            type = "int";
+        Environment::type type = env.getType(lhs);
+        if(!type){
+            type = Environment::type::INT;
         } 
-        if(!type.compare("string")){
-            type="string_ptr";
-            
+        if(type == Environment::type::STRING){
+            type=Environment::type::STRING_PTR;
             f   << "pushq $"<<lhs<<endl;
         }else{
-            
             f   << "pushq %rax"<<endl;
         }
         
         env.addArg(type);
     } else if (!op.compare("string")){
-        env.add(result, "string", lhs);
+        env.add(result, Environment::type::STRING, lhs);
         return false;
     } else if (!op.compare("table")){
-        env.add(result, "table", lhs);
+        env.add(result, Environment::type::ARRAY, lhs);
         return false;
     }
 
