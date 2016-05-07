@@ -36,6 +36,12 @@ public:
       f<< "\tmovq\t%rax,\t"<<lhs<<endl;
       env.add(lhs, "int", "0");
     }
+    if(!env.getType(rhs).compare("cell_ptr")){
+      f<< "\tmovq\t("<<rhs<<"),\t%rax"<<endl; // Dereference, we want the value of rhs
+      f<< "\tmovq\t(%rax),\t%rax"<<endl;
+      f<< "\tmovq\t%rax,\t"<<rhs<<endl;
+      env.add(rhs, "int", "0");
+    }
 
     if(op.compare("call")!=0
       && op.compare("print")!=0
@@ -89,8 +95,7 @@ public:
     } else if (!op.compare("#")){
         f << "\tmovq\t(%rax), %rax"<<endl;
     } else if (!op.compare("tableaccess")){
-        f << "\tincq %rbx" << endl
-        << "\timulq $8, %rbx" << endl
+        f << "\timulq $8, %rbx" << endl
         << "\taddq %rbx, %rax" << endl;
         env.add(result, "cell_ptr", "0");
     } else if (!op.compare("call")){
