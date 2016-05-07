@@ -50,7 +50,7 @@ int main(int argc, char **argv)
     
     system("dot -Tpdf graph.dot -ograph.pdf");
     
-    myfile.open("prog.s");
+    myfile.open("target.s");
     myfile << ".section .data"<<endl;
     myfile<<"\t_char:\t.quad 0 # storage for printing"<<endl;
     myfile<<"\t_count:\t.quad 0 # storage for printing numbers"<<endl;
@@ -175,8 +175,14 @@ int main(int argc, char **argv)
     }
     
     myfile.close();
-    system("as prog.s -o prog.o && ld prog.o -o prog && ./prog; echo \"Process exited with code: $?.\"");
     
+    string asm_link = "as target.s -o target.o && ld target.o -o target";
+    
+    cout << asm_link <<endl;
+    if(system(asm_link.c_str())==-1){
+      cout << "An error has occured during '"<<asm_link<<"'" << endl;
+      return 1;
+    }
     // TODO clean parse tree & graphs
     return 0;
   }
