@@ -1,4 +1,4 @@
-flags = -Wall -std=c++11
+flags = -Wall -std=c++11 -Wfatal-errors
 
 compiler: lex.yy.c compiler.tab.o main.cc
 	g++ $(flags) -o $@ $^
