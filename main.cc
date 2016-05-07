@@ -160,7 +160,7 @@ int main(int argc, char **argv)
         
         myfile <<"\t"<< name <<":\t.quad "<< value.length() <<endl;
         myfile <<"\t"<< name <<"_s:\t.ascii\t\""<<value <<"\""<<endl;
-      } else if(!type.compare("int") || !type.compare("string_ptr")|| !type.compare("table_ptr")){
+      } else if(!type.compare("int") || !type.compare("string_ptr")|| !type.compare("table_ptr")|| !type.compare("cell_ptr")){
         myfile <<"\t"<< name <<":\t.quad 0" <<endl;
         
       }else if(!type.compare("table")){

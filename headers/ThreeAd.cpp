@@ -29,8 +29,15 @@ public:
     //cout << "'"<<op<<"'"<<endl;
     f<< endl<<"\t #" << result << " := " << lhs << " " 
          << op << " " << rhs << endl;
+
+    if(!env.getType(lhs).compare("cell_ptr")){
+      f<< "\tmovq\t("<<lhs<<"),\t%rax"<<endl; // Dereference, we want the value of lhs
+      f<< "\tmovq\t(%rax),\t%rax"<<endl;
+      f<< "\tmovq\t%rax,\t"<<lhs<<endl;
+      env.add(lhs, "int", "0");
+    }
+
     if(op.compare("call")!=0
-      && op.compare("argv")!=0
       && op.compare("print")!=0
       && op.compare("c")!=0
       && op.compare("string")!=0
@@ -38,14 +45,17 @@ public:
       && !lhs.empty()){
       f<< "\tmovq\t"<<lhs<<",\t%rax"<<endl;
     }
-    if(op.compare("c")!=0 && !rhs.empty())
+    if(!rhs.empty())
       f<< "\tmovq\t"<<rhs<<",\t%rbx"<<endl;
+      
+      
+
       
     if(!result.empty() && !env.exists(result))
         env.add(result, "int", "0");
         
     if(!op.compare("c")){
-        string type = env.getType(rhs);
+        string type = env.getType(lhs);
         if(!type.compare("string")){
             env.add(result, "string_ptr", "0");
             f<< "\tmovq\t$"<<lhs<<",\t%rax"<<endl;
@@ -54,10 +64,14 @@ public:
             f<< "\tmovq\t$"<<lhs<<",\t%rax"<<endl;
         } else {
             if(!env.exists(result))
-                env.add(result, type, "0"); // Override the type with the one of the rhs
+                env.add(result, type, "0"); // Override the type with the one of the lhs
             f<< "\tmovq\t"<<lhs<<",\t%rax"<<endl;
         }
-        //f<< "\tmv\t%rax,\t%rbx"<<endl;
+        if(!env.getType(result).compare("cell_ptr")){
+            f<< "\tmovq\t"<<result<<",\t%rcx"<<endl;
+            f<< "\tmovq\t%rax,\t(%rcx)"<<endl; // Move the result to the pointed cell
+            return false;
+        }
         
     } else if (!op.compare("+")){
         f<< "\taddq\t%rbx,\t%rax"<<endl;
@@ -77,13 +91,8 @@ public:
     } else if (!op.compare("tableaccess")){
         f << "\tincq %rbx" << endl
         << "\timulq $8, %rbx" << endl
-        << "\taddq %rbx, %rax" << endl
-        << "\tmovq (%rax), %rax"<<endl;
-	
-	
-	
-        
-        
+        << "\taddq %rbx, %rax" << endl;
+        env.add(result, "cell_ptr", "0");
     } else if (!op.compare("call")){
         int argc = env.argc();
         
@@ -173,10 +182,10 @@ public:
         if(!type.compare("string")){
             type="string_ptr";
             
-            f   << "push $"<<lhs<<endl;
+            f   << "pushq $"<<lhs<<endl;
         }else{
             
-            f   << "push "<<lhs<<endl;
+            f   << "pushq %rax"<<endl;
         }
         
         env.addArg(type);

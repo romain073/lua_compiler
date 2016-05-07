@@ -15,7 +15,7 @@ class Assign: public Statement
             // var = value
             string name = this->variables.front()->convert(current);
             string val = this->values.front()->convert(current);
-            ThreeAd a(name, "c", val, val);
+            ThreeAd a(name, "c", val, "");
             (*current)->instructions.push_back(a);
         }else{
             // var1, var2, ... = val1, val2, ...
@@ -24,7 +24,7 @@ class Assign: public Statement
                 string tmp_name = Expression::newName();
                 tmp.push_back(tmp_name);
                 string val = this->values[i]->convert(current);
-                ThreeAd a(tmp_name, "c", val, val);
+                ThreeAd a(tmp_name, "c", val, "");
                 (*current)->instructions.push_back(a);
             }
             
