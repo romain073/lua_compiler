@@ -16,6 +16,7 @@ public:
     }
     
     void namePass(map<Expression*,string> &naming){
+        naming[this] = Expression::newName();
     }
     
     void emitPass(map<Expression*,string> &naming, BBlock** out){
@@ -55,7 +56,7 @@ public:
         }
         
         // add the call
-        (*out)->instructions.push_back(ThreeAd("", "call", local_fn_name, ""));
+        (*out)->instructions.push_back(ThreeAd(naming[this], "call", local_fn_name, ""));
         
         if(fnname.compare("print") == 0){
             // Add new line if print is called
