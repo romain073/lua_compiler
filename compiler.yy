@@ -17,6 +17,8 @@
     #include "headers/Repeat.cpp"
     #include "headers/Call.cpp"
     #include "headers/String.cpp"
+    #include "headers/Table.cpp"
+    #include "headers/TableAccess.cpp"
 }
 
 %code{
@@ -113,10 +115,10 @@
 %type <void*> funcnamebase
 %type <void*> optcolonname
 %type <void*> eqexplistopt
-%type <void*> optfieldlist
-%type <void*> fieldlist
-%type <void*> field
-%type <void*> tableconstructor
+%type <vector<Expression*>> optfieldlist
+%type <vector<Expression*>> fieldlist
+%type <Expression*> field
+%type <Expression*> tableconstructor
 %type <std::string> str
 
   
@@ -191,7 +193,7 @@ else: /* empty */                               { $$=NULL;}
     | ELSE block                                { $$=$2; }
 
 var : NAME                                      {$$=new Variable($1);}
-    | prefixexp SBRACKETOPEN exp SBRACKETCLOSE  {/* $$=(new Node("tableretrieve"))->add($1)->add($3); */}
+    | prefixexp SBRACKETOPEN exp SBRACKETCLOSE  {$$ = new TableAccess($1, $3);}
     | prefixexp DOT NAME                        {
                                                     Variable* v = (Variable*) $1;
                                                     $$ = new Variable(v->name + "." + $3);
@@ -200,15 +202,15 @@ var : NAME                                      {$$=new Variable($1);}
 varlist : var                                   {$$.push_back($1);}
         | varlist COMMA var                     {$$=$1;$$.push_back($3);}
         
-exp : TRUE                      {/* $$=new Node("value", "true"); */}
-    | FALSE                     {/* $$=new Node("value", "false"); */}
+exp : TRUE                      { $$=new Constant("1"); }
+    | FALSE                     { $$=new Constant("0"); }
     | NIL                       {/* $$=new Node("value", "nil"); */}
     | NUMBER                    { $$=new Constant($1); }
     | str                       { $$=new String($1); }  
     | DOTDOTDOT                 {/* $$=new Node("DOTDOTDOT", $1); */}
     | prefixexp                 { $$=$1; }
     | function                  {/* $$=$1; */}
-    | tableconstructor          {/* $$=$1; */}
+    | tableconstructor          { $$ = $1; }
     | MINUS exp %prec UNARY     { $$=new UnOp($2, "-"); }
     | NOT exp %prec UNARY       { $$=new UnOp($2, "!"); }
     | HASH exp %prec UNARY      { $$=new UnOp($2, "#"); }
@@ -258,20 +260,20 @@ optexplist  : /* empty */               {}
             | explist                   { $$=$1; }
 
 				
-tableconstructor : CBRACKETOPEN optfieldlist CBRACKETCLOSE {/* $$=(new Node("tableconstructor"))->add($2); */}
+tableconstructor : CBRACKETOPEN optfieldlist CBRACKETCLOSE { $$=new Table($2); }
 
-optfieldlist    : /* empty */                       {/* $$=new Node("pass"); */}
-                | fieldlist optfieldsep             {/* $$=$1; */}
+optfieldlist    : /* empty */                       {}  
+                | fieldlist optfieldsep             { $$ = $1; }
                 
 optfieldsep    : /* empty */ 
                 | fieldsep 
                 
-fieldlist   : field                                 {/* $$=(new Node("fieldlist"))->add($1); */}
-            | fieldlist fieldsep field              {/* $$=$1->add($3); */}
+fieldlist   : field                                 { $$.push_back($1); }
+            | fieldlist fieldsep field              { $$ = $1; $$.push_back($3); }
 
 field   : SBRACKETOPEN exp SBRACKETCLOSE EQUAL exp  {/* $$=(new Node("brackets"))->add($2)->add($5); */}
         | NAME EQUAL exp                            {/* $$=(new Node("name", $1))->add($3); */}
-        | exp                                       {/* $$=(new Node("simple"))->add($1); */}
+        | exp                                       { $$ = $1; }
 
 fieldsep    : COMMA 
             | SEMICOLON 

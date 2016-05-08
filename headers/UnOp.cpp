@@ -22,7 +22,7 @@ string op;
         this->left->emitPass(naming, out);
 
      
-    ThreeAd a(naming[this], op, naming[this->left], "unary");
+    ThreeAd a(naming[this], op, naming[this->left], "");
     (*out)->instructions.push_back(a);
   }
 };
