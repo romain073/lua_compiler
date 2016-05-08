@@ -9,6 +9,7 @@
     #include "headers/Constant.cpp"
     #include "headers/Variable.cpp"
     #include "headers/FunctionCall.cpp"
+    #include "headers/FunctionDef.cpp"
     #include "headers/BinOp.cpp"
     #include "headers/UnOp.cpp"
     #include "headers/Comparison.cpp"
@@ -107,13 +108,13 @@
 %type <Sequence*> else
 %type <std::vector<std::pair<Expression*, Sequence*>>> elseif
 %type <void*> optcommaexp
-%type <void*> namelist
-%type <void*> funcname
-%type <void*> funcbody
-%type <void*> optparlist
-%type <void*> parlist
-%type <void*> funcnamebase
-%type <void*> optcolonname
+%type <list<std::string>> namelist
+%type <std::string> funcname
+%type <FunctionDef*> funcbody
+%type <list<std::string>> optparlist
+%type <list<std::string>> parlist
+%type <std::string> funcnamebase
+%type <std::string> optcolonname
 %type <void*> eqexplistopt
 %type <vector<Expression*>> optfieldlist
 %type <vector<Expression*>> fieldlist
@@ -161,25 +162,25 @@ statement   : varlist EQUAL explist             {$$=new Assign($1, $3);}
                                     $$ = s;
                                 }
             | FOR namelist IN explist DO block END      {/* $$=((new Node("forin")))->add($2)->add($4)->add($6); */}
-            | FUNCTION funcname funcbody        {/* $$=(new Node("functiondef"))->add($2)->add($3); */}
+            | FUNCTION funcname funcbody        { $3->setName($2); $$=$3; }
             | LOCAL FUNCTION NAME funcbody      {/* $$=(new Node("localfunctiondef", $3))->add($4); */}
             | LOCAL namelist eqexplistopt       {/* $$=(new Node("local decl/aff"))->add($2)->add($3); */}
 
 eqexplistopt: /* empty */                       {/* $$=new Node("pass"); */}
             | EQUAL explist                     {/* $$=$2; */}
 
-funcname : funcnamebase optcolonname            {/* $$ = (new Node("funcname"))->add($1)->add($2); */}
+funcname : funcnamebase optcolonname            { $$ = $1 + $2; }
 
-funcnamebase : NAME                             {/* $$=new Node("fnname", $1); */}
-	    | funcnamebase DOT NAME                 {/* $$=$1;$$->value = $$->value + "." + $3; */}
+funcnamebase : NAME                             { $$ = $1;}
+	    | funcnamebase DOT NAME                 { $$=$1+"."+$3; }
 	    
-optcolonname: /* empty */                       {/* $$=new Node("pass"); */}
-            | COLON NAME                        {/* $$=new Node("fname",$2); */}
+optcolonname: /* empty */                       { }
+            | COLON NAME                        { $$ = ":" + $2; }
 
-funcbody: POPEN optparlist PCLOSE block END     {/* $$=(new Node("fnbody"))->add($2)->add($4); */}
+funcbody: POPEN optparlist PCLOSE block END     { $$=new FunctionDef("", $2, $4); }
 
-optparlist:  /* empty */                        {/* $$=new Node("pass"); */}
-        | parlist                               {/* $$=$1; */}
+optparlist:  /* empty */                        { }
+        | parlist                               { $$=$1; }
 
 
 optcommaexp  : /* empty */                      {/* $$=new Node("pass"); */}
@@ -232,13 +233,13 @@ exp : TRUE                      { $$=new Constant("1"); }
     
 function : FUNCTION funcbody            {/* $$=(new Node("anonfunc"))->add($2); */}
 
-parlist : namelist                      {/* $$=(new Node("parlist"))->add($1); */}
+parlist : namelist                      { $$ = $1; }
         | namelist COMMA DOTDOTDOT      {/* $$=(new Node("parlist", $3))->add($1); */}
         | DOTDOTDOT                     {/* $$=new Node("parlist", $1); */}
         
 
-namelist: NAME                          {/* $$=(new Node("namelist"))->add(new Node("name", $1)); */}
-        | namelist COMMA NAME           {/* $$=$1->add(new Node("name", $3)); */}
+namelist: NAME                          { $$.push_back($1); }
+        | namelist COMMA NAME           { $$ = $1; $$.push_back($3); }
 
 explist : exp {$$.push_back($1);}
         | explist COMMA exp {$$=$1; $$.push_back($3); }
