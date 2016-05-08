@@ -57,6 +57,14 @@ int main(int argc, char **argv)
     myfile<<"\t_argc:\t.quad 0 # storage for printing numbers"<<endl;
     myfile<<"\t_idx:\t.quad 0 # storage for printing numbers"<<endl;
     
+    
+    myfile<<"\t_read_buf:\t.quad 0 # storage for reading numbers"<<endl;
+    myfile<<"\t_bytesread:\t.quad 0 # storage for reading numbers"<<endl;
+    myfile<<"\t_read_retval:\t.quad 0 # storage for reading numbers"<<endl;
+    myfile<<"\t_read_mul:\t.quad 0 # storage for reading numbers"<<endl;
+    myfile<<"\t_read_idx:\t.quad 0 # storage for reading numbers"<<endl;
+    
+    
     vector<pair<string, list<string>>> functions;
 
     functions.push_back(make_pair("print_char", (list<string>){
@@ -135,6 +143,37 @@ int main(int argc, char **argv)
 "movq $32, %rcx",
 "call print_char",
 "jmp argsprintstr"
+    }));
+    
+    
+      functions.push_back(make_pair("io.read", (list<string>){
+"movq $8, %rdx",
+"mov $_read_buf, %rcx",
+"movq $0, %rbx",
+"movq $3, %rax",
+"int $0x80",
+"movq %rax, _bytesread",
+"movq $0, _read_retval",
+"movq $1, _read_mul",
+"movq _bytesread, %rax",
+"movq %rax, _read_idx",
+"decq _read_idx",
+"read_beg:",
+"decq _read_idx",
+"movq $_read_buf, %rax",
+"addq _read_idx, %rax",
+"movq (%rax), %rax",
+"andq $0xff, %rax",
+"subq $48, %rax",
+"imulq _read_mul, %rax",
+"addq %rax, _read_retval",
+"movq _read_mul, %rcx",
+"imulq $10, %rcx",
+"movq %rcx, _read_mul",
+"cmpq $0, _read_idx",
+"jnz read_beg",
+"movq _read_retval, %rax",
+"ret"
     }));
   
     myfile << ".section .text"<<endl;
