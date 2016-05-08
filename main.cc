@@ -47,6 +47,11 @@ int main(int argc, char **argv)
     myfile.open("graph.dot");
     myfile << "digraph structs { node [shape=record];" << endl;
     start->dumpGraph(myfile);
+    
+    for(auto i : functiondefs){
+      i->dumpGraph(myfile);
+    }
+    
     myfile << "}" << endl;
     myfile.close(); 
     
@@ -184,14 +189,25 @@ int main(int argc, char **argv)
     for(auto s : functions){
       myfile << ".type "<<s.first<<", @function"<<endl;
     }
+    
+    for(auto i : functiondefs){
+      myfile << ".type "<<i->label<<", @function"<<endl;
+    }
+    
     for(auto s : functions){
       myfile <<s.first<<":"<<endl;
       for(auto i : s.second)
         myfile<<"\t"<<i<<endl;
     }
     
-    myfile << "_start:"<<endl;
+    
     Environment env;
+    for(auto i : functiondefs){
+      i->dumpAssembly(myfile, env, true);
+    }
+    
+    
+    myfile << "_start:"<<endl;
     start->dumpAssembly(myfile, env);
     
     myfile << ".section .data"<<endl;

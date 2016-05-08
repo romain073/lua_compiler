@@ -20,10 +20,10 @@ BBlock *trueExit, *falseExit;
 string label;
 static int blockCounter;
   
-  BBlock()
-    :  trueExit(NULL), falseExit(NULL)  {
-      label = newName();
-    }
+  BBlock():BBlock(newName())
+  { }
+  BBlock(string name) : trueExit(NULL), falseExit(NULL), label(name)
+  { }
 
 
   void blockToGraph(ofstream &f){
@@ -101,7 +101,15 @@ static int blockCounter;
     }
   }
   
-  void dumpAssembly(ofstream &f, Environment &env){
+  void assemblyFn(ofstream &f, Environment &env){
+    f << this->label <<":"<< endl;
+    for(auto i : instructions) {
+      i.assembly(f, env);
+    }
+    f << "\tret"<<endl;
+  }
+  
+  void dumpAssembly(ofstream &f, Environment &env, bool function = false){
     set<BBlock *> done, todo;
     todo.insert(this);
     while(todo.size()>0)
@@ -110,8 +118,10 @@ static int blockCounter;
       auto first = todo.begin();
       BBlock *next = *first;
       todo.erase(first);
-  
-      next->assembly(f, env);
+      if(function)
+        next->assemblyFn(f, env);
+      else
+        next->assembly(f, env);
       done.insert(next);
       if(next->trueExit!=NULL && done.find(next->trueExit)==done.end())
         todo.insert(next->trueExit);

@@ -18,10 +18,12 @@ class FunctionDef: public Statement
     }
     
     void convert(BBlock** current, list<BBlock*> &functions){
-        cout << "Defined function " << name << endl;
-                for(auto i : params){
-            cout << "p "<<i<<endl;
-        }
+        BBlock* fn = new BBlock(name);
+        BBlock* curr_fn = fn;
+        
+        body->convert(&curr_fn, functions);
+        
+        functions.push_back(fn);
     }
 };
 
