@@ -16,14 +16,14 @@ class If: public Statement
     {
     }
     
-    void convert(BBlock** current){
+    void convert(BBlock** current, list<BBlock*> &functions){
         condition->convert(current);
         
         BBlock* back = new BBlock();
         
         BBlock* trueBlock = new BBlock();
         BBlock* trueCur = trueBlock;
-        seq_true->convert(&trueCur);
+        seq_true->convert(&trueCur, functions);
         (*current)->trueExit = trueBlock;
         trueCur->trueExit = back;
         /*
@@ -35,7 +35,7 @@ class If: public Statement
         if(seq_false != NULL){
             BBlock* falseBlock = new BBlock();
             BBlock* falseCur = falseBlock;
-            seq_false->convert(&falseCur);
+            seq_false->convert(&falseCur, functions);
             (*current)->falseExit = falseBlock;
             falseCur->trueExit = back;
         }else{

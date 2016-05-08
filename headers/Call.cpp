@@ -9,7 +9,7 @@ class Call: public Statement
     Expression* exp;
     Call(Expression* exp): exp(exp){ }
     
-    void convert(BBlock** current){
+    void convert(BBlock** current, list<BBlock*> &functions){
         this->exp->convert(current);
     }
 };

@@ -13,9 +13,9 @@ class Sequence: public Statement
         return this;
     }
     
-    void convert(BBlock** current){
+    void convert(BBlock** current, list<BBlock*> &functions){
         for(auto s : this->children){
-            s->convert(current);
+            s->convert(current, functions);
         }
     }
 };

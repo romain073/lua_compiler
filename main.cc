@@ -39,7 +39,9 @@ int main(int argc, char **argv)
     BBlock *start = new BBlock();
     BBlock *current = start;
     
-    root->convert(&current);
+    list<BBlock*> functiondefs;
+    
+    root->convert(&current, functiondefs);
     
     ofstream myfile;
     myfile.open("graph.dot");
