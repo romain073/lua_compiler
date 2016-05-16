@@ -8,3 +8,5 @@ compiler.tab.cc
 compiler.tab.hh
 prog
 prog.s
+target.s
+target
