@@ -102,16 +102,26 @@ static int blockCounter;
   }
   
   void assemblyFn(ofstream &f, Environment &env){
-    f << this->label <<":"<< endl;
+    f << this->label <<":" << endl
+      << "pushq %rbp" << endl
+      << "movq %rsp, %rbp"<<endl; // Save %rbp & update it
+
     for(auto i : instructions) {
       i.assembly(f, env);
     }
-    f << "\tret"<<endl;
+    
+    f << "\tmovq %rbp, %rsp"<<endl // Restore %rsp & %rbp 
+      <<"\tpopq %rbp"<<endl
+      <<"\tret"<<endl;
   }
   
   void dumpAssembly(ofstream &f, Environment &env, bool function = false){
     set<BBlock *> done, todo;
     todo.insert(this);
+    
+    Environment e(true);
+    
+    
     while(todo.size()>0)
     {
       // Pop an arbitrary element from todo set
@@ -119,7 +129,7 @@ static int blockCounter;
       BBlock *next = *first;
       todo.erase(first);
       if(function)
-        next->assemblyFn(f, env);
+        next->assemblyFn(f, e);
       else
         next->assembly(f, env);
       done.insert(next);

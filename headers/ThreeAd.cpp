@@ -29,6 +29,8 @@ public:
     //cout << "'"<<op<<"'"<<endl;
     f<< endl<<"\t #" << result << " := " << lhs << " " 
          << op << " " << rhs << endl;
+    lhs = env.translateParam(lhs);
+    rhs = env.translateParam(rhs);
 
     if(env.getType(lhs) == Environment::type::CELL_PTR){
       f<< "\tmovq\t("<<lhs<<"),\t%rax"<<endl; // Dereference, we want the value of lhs
@@ -47,6 +49,7 @@ public:
       && op.compare("print")!=0
       && op.compare("c")!=0
       && op.compare("string")!=0
+      && op.compare("param")!=0
       && op.compare("table")!=0
       && !lhs.empty()){
       f<< "\tmovq\t"<<lhs<<",\t%rax"<<endl;
@@ -81,6 +84,10 @@ public:
         
     } else if (!op.compare("+")){
         f<< "\taddq\t%rbx,\t%rax"<<endl;
+    } else if (!op.compare("param")){
+        
+        env.addParam(lhs);
+        
     } else if (!op.compare("-")){
         f<< "\tsubq\t%rbx,\t%rax"<<endl;
     } else if (!op.compare("*")){
@@ -173,12 +180,12 @@ public:
         }
 
     } else if (!op.compare("print_nl")){
-        f   << "movq $4, %rax"<<endl
-            << "movq $1, %rbx" << endl
-            << "movq $1, %rdx" << endl
-            << "movq $10, _char" << endl
-            << "movq $_char, %rcx" << endl
-            << "int  $0x80" << endl;
+        f   << "\tmovq $4, %rax"<<endl
+            << "\tmovq $1, %rbx" << endl
+            << "\tmovq $1, %rdx" << endl
+            << "\tmovq $10, _char" << endl
+            << "\tmovq $_char, %rcx" << endl
+            << "\tint  $0x80" << endl;
     } else if ( !op.compare("argv")){
         Environment::type type = env.getType(lhs);
         if(!type){
@@ -186,9 +193,9 @@ public:
         } 
         if(type == Environment::type::STRING){
             type=Environment::type::STRING_PTR;
-            f   << "pushq $"<<lhs<<endl;
+            f   << "\tpushq $"<<lhs<<endl;
         }else{
-            f   << "pushq %rax"<<endl;
+            f   << "\tpushq %rax"<<endl;
         }
         
         env.addArg(type);
@@ -200,7 +207,7 @@ public:
         return false;
     }
 
-    if(!result.empty())
+    if(!result.empty() && !env.isFunction())
       f<< "\tmovq\t%rax,\t"<<result<<endl;
     return false;
   }

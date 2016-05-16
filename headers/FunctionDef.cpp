@@ -20,6 +20,8 @@ class FunctionDef: public Statement
     void convert(BBlock** current, list<BBlock*> &functions){
         BBlock* fn = new BBlock(name);
         BBlock* curr_fn = fn;
+        for(string i : params)
+            fn->instructions.push_back(ThreeAd("", "param", i, ""));
         
         body->convert(&curr_fn, functions);
         
