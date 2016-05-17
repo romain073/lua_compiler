@@ -40,6 +40,18 @@ print_nbr:
 	addq %rsp, %rax 
 	movq (%rax), %rax	# get the value of the first argument 
 	movq $0, _count 	# initialize a char counter
+	
+	cmpq $0, %rax
+	jge loop			# if %rax is positive, continue
+	movq $45, %rcx		# otherwise, print a '-'
+	pushq %rax			
+	call print_char		# save rax, print, restore rax
+	popq %rax
+	negq %rax			# continue with the positive number
+	
+	
+	
+	
 	loop:
 	incq _count 
 	movq $0, %rdx
