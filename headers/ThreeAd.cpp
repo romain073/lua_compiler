@@ -40,13 +40,13 @@ public:
         env.fntranslate(result, f);
 
     if(env.getType(lhs) == Environment::type::CELL_PTR){
-      f<< "\tmovq\t("<<lhs<<"),\t%rax"<<endl; // Dereference, we want the value of lhs
+      f<< "\tmovq\t"<<lhs<<",\t%rax"<<endl; // Dereference, we want the value of lhs
       f<< "\tmovq\t(%rax),\t%rax"<<endl;
       f<< "\tmovq\t%rax,\t"<<lhs<<endl;
       env.add(lhs, Environment::type::INT, "0");
     }
     if(env.getType(rhs) == Environment::type::CELL_PTR){
-      f<< "\tmovq\t("<<rhs<<"),\t%rax"<<endl; // Dereference, we want the value of rhs
+      f<< "\tmovq\t"<<rhs<<",\t%rax"<<endl; // Dereference, we want the value of rhs
       f<< "\tmovq\t(%rax),\t%rax"<<endl;
       f<< "\tmovq\t%rax,\t"<<rhs<<endl;
       env.add(rhs, Environment::type::INT, "0");
@@ -125,6 +125,14 @@ public:
         Environment::type t = Environment::type::INT;
         while(getline(ss, token, ',')) { // For each arg
             t = env.getType(token);
+            
+            if(t == Environment::type::CELL_PTR){
+              f<< "\tmovq\t"<<token<<",\t%rax"<<endl; // Dereference, we want the value of rhs
+              f<< "\tmovq\t(%rax),\t%rax"<<endl;
+              f<< "\tmovq\t%rax,\t"<<token<<endl;
+              env.add(token, Environment::type::INT, "0");
+            }
+                    
             
             env.fntranslate(token, f);
             if(!t){
