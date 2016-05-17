@@ -18,6 +18,7 @@
     #include "headers/Repeat.cpp"
     #include "headers/Call.cpp"
     #include "headers/String.cpp"
+    #include "headers/Return.cpp"
     #include "headers/Table.cpp"
     #include "headers/TableAccess.cpp"
 }
@@ -93,9 +94,9 @@
 
 %type <Sequence*> block
 %type <Sequence*> statements
-%type <void*> opt_laststatement
+%type <Statement*> opt_laststatement
 %type <Statement*> statement
-%type <void*> laststatement
+%type <Statement*> laststatement
 %type <vector<Expression*>> optexplist
 %type <vector<Expression*>> varlist
 %type <vector<Expression*>> explist
@@ -129,15 +130,15 @@
 
 root : block                                    {root=$1;}
 
-block   : statements opt_laststatement          {$$=$1;/* TODO add optlast*/}
+block   : statements opt_laststatement          {$$=$1; if($2!=NULL) $$->add($2);}
 
 statements : /* empty */                        {$$=new Sequence();}
         | statements statement opt_semicolon    {$$=$1; $$->add($2);}
         
-opt_laststatement: /* empty */                  {/*$$=new Node("pass");*/}
-                | laststatement opt_semicolon   {/*$$=$1;*/}
+opt_laststatement: /* empty */                  {$$=NULL;}
+                | laststatement opt_semicolon   {$$=$1;}
 
-laststatement   : RETURN optexplist             {/*$$=(new Node("return"))->add($2);*/}
+laststatement   : RETURN optexplist             {$$=new Return($2);}
                 | BREAK                         {/*$$=new Node("break");*/}
         
 
