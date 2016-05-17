@@ -29,8 +29,14 @@ public:
     //cout << "'"<<op<<"'"<<endl;
     f<< endl<<"\t #" << result << " := " << lhs << " " 
          << op << " " << rhs << endl;
-    lhs = env.translateParam(lhs);
-    rhs = env.translateParam(rhs);
+    if(op.compare("call")!=0
+        && op.compare("param")!=0
+        && !lhs.empty())
+        env.fntranslate(lhs, f);
+    if(!rhs.empty())
+        env.fntranslate(rhs, f);
+    if(!result.empty())
+        env.fntranslate(result, f);
 
     if(env.getType(lhs) == Environment::type::CELL_PTR){
       f<< "\tmovq\t("<<lhs<<"),\t%rax"<<endl; // Dereference, we want the value of lhs
@@ -205,9 +211,13 @@ public:
     } else if (!op.compare("table")){
         env.add(result, Environment::type::ARRAY, lhs);
         return false;
+    } else if (!op.compare("return")){
+        f << "\tmovq %rbp, %rsp"<<endl // Restore %rsp & %rbp 
+          <<"\tpopq %rbp"<<endl
+          <<"\tret"<<endl;
     }
 
-    if(!result.empty() && !env.isFunction())
+    if(!result.empty())
       f<< "\tmovq\t%rax,\t"<<result<<endl;
     return false;
   }

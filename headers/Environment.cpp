@@ -3,6 +3,7 @@
 #include<iostream>
 #include <map>
 #include <vector>
+#include <fstream>
 using namespace std;
 
 class Environment
@@ -26,20 +27,40 @@ class Environment
     }
     
     vector<string> params;
+    vector<string> locals;
     
     void addParam(string name){
         params.push_back(name);
     }
     
-    string translateParam(string s){
+    bool fntranslate(string &s, ofstream &f){
+        if(!isFunction() || s[0]=='$')
+            return false;
         int c = 0;
         for(string i : params){
             if(i.compare(s)==0){
-                return to_string((c+3)*8)+"(%rbp)"; // offset is 3 because of the old value of rbp & argc
+                s = to_string((c+3)*8)+"(%rbp)"; // offset is 3 because of the old value of rbp & argc
+                return false;
             }
             c++;
         }
-        return s;
+        
+            
+        c = 0;
+        for(string i : locals){
+            if(i.compare(s)==0){
+                s = "-"+to_string((c+1)*8)+"(%rbp)";
+                return false;
+            }
+            c++;
+        }
+        
+        locals.push_back(s);
+        f<< "\tsubq $8, %rsp\t#Allocate local variable "<<s<<endl;
+        s = "-"+to_string((c+1)*8)+"(%rbp)";
+        
+        
+        return true;
     }
     
     map<string, pair<type, string>> getEnv(){

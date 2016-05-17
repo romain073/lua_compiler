@@ -78,8 +78,13 @@ static int blockCounter;
     
 }
   
-  void assembly(ofstream &f, Environment &env){
+  void assembly(ofstream &f, Environment &env, bool function, bool first){
     f << this->label <<":"<< endl;
+    
+    if(function && first)
+      f << "\tpushq %rbp" << endl
+        << "\tmovq %rsp, %rbp"<<endl; // Save %rbp & update it
+    
     bool endblock;
     for(auto i : instructions) {
       endblock = i.assembly(f, env);
@@ -91,36 +96,28 @@ static int blockCounter;
       }
     }else{
       if(trueExit == 0 && falseExit == 0){
-        // End of the program
-        f << "\tmovq\t$0,\t%rbx" << endl
-          << "\tmovq\t$1,\t%rax" << endl
-          << "\tint\t$0x80" << endl;
+        
+        if(!function)
+          // End of the program
+          f << "\tmovq\t$0,\t%rbx" << endl
+            << "\tmovq\t$1,\t%rax" << endl
+            << "\tint\t$0x80" << endl;
+        else
+          f << "\tmovq %rbp, %rsp"<<endl // Restore %rsp & %rbp 
+            <<"\tpopq %rbp"<<endl
+            <<"\tret"<<endl;
       }else{
         f <<"\tjmp\t"<< trueExit->label << endl;
       }
     }
   }
   
-  void assemblyFn(ofstream &f, Environment &env){
-    f << this->label <<":" << endl
-      << "pushq %rbp" << endl
-      << "movq %rsp, %rbp"<<endl; // Save %rbp & update it
-
-    for(auto i : instructions) {
-      i.assembly(f, env);
-    }
-    
-    f << "\tmovq %rbp, %rsp"<<endl // Restore %rsp & %rbp 
-      <<"\tpopq %rbp"<<endl
-      <<"\tret"<<endl;
-  }
-  
   void dumpAssembly(ofstream &f, Environment &env, bool function = false){
     set<BBlock *> done, todo;
     todo.insert(this);
     
-    Environment e(true);
-    
+    Environment fnenv(function);
+    bool firstBlock = true;
     
     while(todo.size()>0)
     {
@@ -129,14 +126,16 @@ static int blockCounter;
       BBlock *next = *first;
       todo.erase(first);
       if(function)
-        next->assemblyFn(f, e);
+        next->assembly(f, fnenv, function,firstBlock);
       else
-        next->assembly(f, env);
+        next->assembly(f, env, function,firstBlock);
+        
       done.insert(next);
       if(next->trueExit!=NULL && done.find(next->trueExit)==done.end())
         todo.insert(next->trueExit);
       if(next->falseExit!=NULL && done.find(next->falseExit)==done.end())
         todo.insert(next->falseExit);
+      firstBlock = false;
     }
   }
   
