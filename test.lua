@@ -1,11 +1,10 @@
-
-function fact(n)
-    if n<2 then
-        return 1
-    else
-        return n*fact(n-1)
-    end
+function fibonacci(n)
+    a=42
+    print(a)
+    return -1
 end
 
-print("okay")
-print(fact(5))
+for n = 1, 64 do
+    print(1)
+end
+io.write("...\n")

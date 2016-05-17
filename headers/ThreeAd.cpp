@@ -33,7 +33,8 @@ public:
         && op.compare("param")!=0
         && !lhs.empty())
         env.fntranslate(lhs, f);
-    if(!rhs.empty())
+    if(op.compare("call")!=0
+        && !rhs.empty())
         env.fntranslate(rhs, f);
     if(!result.empty())
         env.fntranslate(result, f);
@@ -52,7 +53,6 @@ public:
     }
 
     if(op.compare("call")!=0
-      && op.compare("print")!=0
       && op.compare("c")!=0
       && op.compare("string")!=0
       && op.compare("param")!=0
@@ -60,7 +60,8 @@ public:
       && !lhs.empty()){
       f<< "\tmovq\t"<<lhs<<",\t%rax"<<endl;
     }
-    if(!rhs.empty())
+    if(op.compare("call")!=0
+        && !rhs.empty())
       f<< "\tmovq\t"<<rhs<<",\t%rbx"<<endl;
       
       
@@ -112,33 +113,46 @@ public:
         << "\taddq %rbx, %rax" << endl;
         env.add(result, Environment::type::CELL_PTR, "0");
     } else if (!op.compare("call")){
-        int argc = env.argc();
+        string args = rhs.substr(1, rhs.length()-2); // args separated by commas
         
-        vector<Environment::type> types = env.argTypes();
-        f << "\t#"<<lhs<<"(";
-        for(auto i : types){
-            f<<i<<" ";
+        istringstream ss(args);
+        string token;
+        
+        int argc=0;
+        Environment::type t = Environment::type::INT;
+        while(getline(ss, token, ',')) { // For each arg
+            t = env.getType(token);
+            
+            env.fntranslate(token, f);
+            if(!t){
+                t = Environment::type::INT;
+            } 
+            // Push argv & increment argc
+            if(t == Environment::type::STRING){
+                t=Environment::type::STRING_PTR;
+                f   << "\tpushq $"<<token<<endl;
+            }else{
+                f   << "\tpushq "<<token<<endl;
+            }
+            argc++; 
         }
-        f<<")"<<endl;
         
         // Push argc
         f<< "\tpushq $"<<to_string(argc)<<endl;
         
         if(lhs == "print"){
-            if(types[0] == Environment::type::INT){
-                f<< "\tcall \tprint_nbr"<<endl;
-            } else {
+            if(t == Environment::type::STRING_PTR){
                 f<< "\tcall \tprint_str"<<endl;
+            } else {
+                f<< "\tcall \tprint_nbr"<<endl;
             }
         }else {
             f<< "\tcall \t"<<lhs<<endl;
         }
         
-        
-        env.clearArgs();
         // Pop argv & argc
         f << "\taddq\t$"<< 8*(argc+1) <<",\t%rsp"<<endl;
-        
+
         
     } else if (!op.compare("EQ")){
         f<< "\tsubq\t%rbx,\t%rax"<<endl;
@@ -164,27 +178,6 @@ public:
         f<< "\tsubq\t%rax,\t%rbx"<<endl;
         f<<"\tjs";
         return true;
-    } else if (!op.compare("print")){
-        Environment::type type = env.getType(lhs);
-        if(type==Environment::type::STRING){
-            f   << "movq $4, %rax"<<endl
-            << "movq $1, %rbx" << endl
-            << "movq "<< lhs <<", %rdx" << endl
-            << "movq $"<< lhs <<"_s, %rcx" << endl
-            << "int  $0x80" << endl;
-        } else if(type==Environment::type::STRING_PTR){
-            env.add(result, Environment::type::STRING_PTR, "0");
-            f  << "movq "<< lhs <<", %rax" << endl
-            << "movq (%rax), %rdx" << endl
-            << "movq 8(%rax), %rcx" << endl
-            << "movq $4, %rax"<<endl
-            << "movq $1, %rbx" << endl
-            << "int  $0x80" << endl;
-        } else {
-            cout <<"print unknown type"<<endl;
-            exit(42);
-        }
-
     } else if (!op.compare("print_nl")){
         f   << "\tmovq $4, %rax"<<endl
             << "\tmovq $1, %rbx" << endl
@@ -192,19 +185,6 @@ public:
             << "\tmovq $10, _char" << endl
             << "\tmovq $_char, %rcx" << endl
             << "\tint  $0x80" << endl;
-    } else if ( !op.compare("argv")){
-        Environment::type type = env.getType(lhs);
-        if(!type){
-            type = Environment::type::INT;
-        } 
-        if(type == Environment::type::STRING){
-            type=Environment::type::STRING_PTR;
-            f   << "\tpushq $"<<lhs<<endl;
-        }else{
-            f   << "\tpushq %rax"<<endl;
-        }
-        
-        env.addArg(type);
     } else if (!op.compare("string")){
         env.add(result, Environment::type::STRING, lhs);
         return false;
