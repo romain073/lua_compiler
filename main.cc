@@ -215,7 +215,9 @@ int main(int argc, char **argv)
       string name(i.first), value(i.second.second);
       Environment::type type = i.second.first;
       if(type == Environment::type::STRING){
-        myfile <<"\t"<< name <<":\t.quad "<< value.length() <<endl;
+        
+        int backslash_count = count(value.begin(), value.end(), '\\');
+        myfile <<"\t"<< name <<":\t.quad "<< value.length()-backslash_count <<endl;
         myfile <<"\t"<< name <<"_s:\t.ascii\t\""<<value <<"\""<<endl;
       } else if(type == Environment::type::INT || 
           type == Environment::type::STRING_PTR || 
