@@ -108,13 +108,27 @@ io.read:
 	addq _read_idx, %rax
 	movq (%rax), %rax		
 	andq $0xff, %rax		# rax = string[idx]
+	
+	cmpq $45, %rax			# if rax == '-' then retval = -retval, and skip the current char
+	jnz read_skip_sign
+	movq _read_retval, %rax
+	negq %rax				
+	movq %rax, _read_retval
+	
+	jmp read_end			# return the current retval
+	
+	read_skip_sign:
 	subq $48, %rax			# rax = intval(rax)
 	imulq _read_mul, %rax	# rax*=mul
 	addq %rax, _read_retval	# retval+=rax
 	movq _read_mul, %rcx
 	imulq $10, %rcx
 	movq %rcx, _read_mul	# mul*=10
+	
+	
 	cmpq $0, _read_idx		# continue while idx>0
 	jnz read_beg
+	
+	read_end:
 	movq _read_retval, %rax # return
 	ret
