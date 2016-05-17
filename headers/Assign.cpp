@@ -10,7 +10,7 @@ class Assign: public Statement
     vector<Expression*> values;
     Assign(vector<Expression*> var, vector<Expression*> val): variables(var), values(val){ }
     
-    void convert(BBlock** current){
+    void convert(BBlock** current, list<BBlock*> &functions){
         if(this->variables.size()==1){
             // var = value
             string name = this->variables.front()->convert(current);

@@ -39,12 +39,19 @@ int main(int argc, char **argv)
     BBlock *start = new BBlock();
     BBlock *current = start;
     
-    root->convert(&current);
+    list<BBlock*> functiondefs;
+    
+    root->convert(&current, functiondefs);
     
     ofstream myfile;
     myfile.open("graph.dot");
     myfile << "digraph structs { node [shape=record];" << endl;
     start->dumpGraph(myfile);
+    
+    for(auto i : functiondefs){
+      i->dumpGraph(myfile);
+    }
+    
     myfile << "}" << endl;
     myfile.close(); 
     
@@ -57,9 +64,18 @@ int main(int argc, char **argv)
     myfile << ".section .text"<<endl;
     myfile << ".globl _start"<<endl;
     
+
+    for(auto i : functiondefs){
+      myfile << ".type "<<i->label<<", @function"<<endl;
+    }
+    
+    Environment env;
+    for(auto i : functiondefs){
+      i->dumpAssembly(myfile, env, true);
+    }
+    
     
     myfile << "_start:"<<endl;
-    Environment env;
     start->dumpAssembly(myfile, env);
     
     myfile << ".section .data"<<endl;
@@ -67,7 +83,9 @@ int main(int argc, char **argv)
       string name(i.first), value(i.second.second);
       Environment::type type = i.second.first;
       if(type == Environment::type::STRING){
-        myfile <<"\t"<< name <<":\t.quad "<< value.length() <<endl;
+        
+        int backslash_count = count(value.begin(), value.end(), '\\');
+        myfile <<"\t"<< name <<":\t.quad "<< value.length()-backslash_count <<endl;
         myfile <<"\t"<< name <<"_s:\t.ascii\t\""<<value <<"\""<<endl;
       } else if(type == Environment::type::INT || 
           type == Environment::type::STRING_PTR || 

@@ -20,10 +20,10 @@ BBlock *trueExit, *falseExit;
 string label;
 static int blockCounter;
   
-  BBlock()
-    :  trueExit(NULL), falseExit(NULL)  {
-      label = newName();
-    }
+  BBlock():BBlock(newName())
+  { }
+  BBlock(string name) : trueExit(NULL), falseExit(NULL), label(name)
+  { }
 
 
   void blockToGraph(ofstream &f){
@@ -78,8 +78,13 @@ static int blockCounter;
     
 }
   
-  void assembly(ofstream &f, Environment &env){
+  void assembly(ofstream &f, Environment &env, bool function, bool first){
     f << this->label <<":"<< endl;
+    
+    if(function && first)
+      f << "\tpushq %rbp" << endl
+        << "\tmovq %rsp, %rbp"<<endl; // Save %rbp & update it
+    
     bool endblock;
     for(auto i : instructions) {
       endblock = i.assembly(f, env);
@@ -91,32 +96,46 @@ static int blockCounter;
       }
     }else{
       if(trueExit == 0 && falseExit == 0){
-        // End of the program
-        f << "\tmovq\t$0,\t%rbx" << endl
-          << "\tmovq\t$1,\t%rax" << endl
-          << "\tint\t$0x80" << endl;
+        
+        if(!function)
+          // End of the program
+          f << "\tmovq\t$0,\t%rbx" << endl
+            << "\tmovq\t$1,\t%rax" << endl
+            << "\tint\t$0x80" << endl;
+        else
+          f << "\tmovq %rbp, %rsp"<<endl // Restore %rsp & %rbp 
+            <<"\tpopq %rbp"<<endl
+            <<"\tret"<<endl;
       }else{
         f <<"\tjmp\t"<< trueExit->label << endl;
       }
     }
   }
   
-  void dumpAssembly(ofstream &f, Environment &env){
+  void dumpAssembly(ofstream &f, Environment &env, bool function = false){
     set<BBlock *> done, todo;
     todo.insert(this);
+    
+    Environment fnenv(function);
+    bool firstBlock = true;
+    
     while(todo.size()>0)
     {
       // Pop an arbitrary element from todo set
       auto first = todo.begin();
       BBlock *next = *first;
       todo.erase(first);
-  
-      next->assembly(f, env);
+      if(function)
+        next->assembly(f, fnenv, function,firstBlock);
+      else
+        next->assembly(f, env, function,firstBlock);
+        
       done.insert(next);
       if(next->trueExit!=NULL && done.find(next->trueExit)==done.end())
         todo.insert(next->trueExit);
       if(next->falseExit!=NULL && done.find(next->falseExit)==done.end())
         todo.insert(next->falseExit);
+      firstBlock = false;
     }
   }
   

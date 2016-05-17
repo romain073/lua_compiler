@@ -12,7 +12,7 @@ vector<Expression*> expressions;
 vector<Statement*> children;
   Statement() {}
 
-  virtual void convert(BBlock** current){
+  virtual void convert(BBlock** current, list<BBlock*> &functions){
     cout << "Convert not implemented"<<endl;
   }
 };
