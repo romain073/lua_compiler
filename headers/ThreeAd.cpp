@@ -82,7 +82,10 @@ public:
     } else if (!op.compare("+")){
         f<< "\taddq\t%rbx,\t%rax"<<endl;
     } else if (!op.compare("-")){
-        f<< "\tsubq\t%rbx,\t%rax"<<endl;
+        if(rhs.empty())
+            f<< "\tnegq\t%rax"<<endl;
+        else
+            f<< "\tsubq\t%rbx,\t%rax"<<endl;
     } else if (!op.compare("*")){
         f<< "\timulq\t%rbx,\t%rax"<<endl;
     } else if (!op.compare("/")){
