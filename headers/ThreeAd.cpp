@@ -141,37 +141,26 @@ public:
               env.add(token, Environment::type::INT, "0");
             }
                     
-            
             env.fntranslate(token, f);
             if(!t){
                 t = Environment::type::INT;
             } 
             
             if(printFn){
-                
-                
                 if(t == Environment::type::STRING){
                     f   << "\tpushq $"<<token<<endl;
                     f   << "\tpushq $1"<<endl;
                     f   << "\tcall print_str"<<endl;
                     f   << "\tpopq %rax"<<endl;
-                    
                 }else{
-                    f   << "\tpushq "<<token<<endl;
-                    f   << "\tpushq $1"<<endl;
+                    f   << "\tmovq "<<token<<", %rax"<<endl;
                     f   << "\tcall print_nbr"<<endl;
-                    f   << "\tpopq %rax"<<endl;
                 }
-                
                 if(print){
                     f   << "\tcall print_tab"<<endl;
                 }
-                
                 continue;
             }
-            
-            
-            
             // Push argv & increment argc
             if(t == Environment::type::STRING){
                 t=Environment::type::STRING_PTR;
@@ -181,7 +170,6 @@ public:
             }
             argc++; 
         }
-        
         
         if(printFn){
             if(print){

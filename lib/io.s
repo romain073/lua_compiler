@@ -27,40 +27,26 @@ print_char:
 	int  $0x80
 	ret
 	
-# Prints a sequence of number
+# Prints a number
 print_nbr:
-	movq 8(%rsp), %rax
-	movq %rax, _argc	# get argc
-	addq $2, _argc	
-	movq $2, _idx		# get the first argument
-	args:
-	movq _idx, %rax
-	cmpq _argc, %rax	# Return if done
-	jz return
-	movq $8, %rax
-	imulq _idx 
-	addq %rsp, %rax 
-	movq (%rax), %rax	# get the value of the first argument 
+	# rax holds the value of the argument 
 	movq $0, _count 	# initialize a char counter
 	
 	cmpq $0, %rax
 	jge loop			# if %rax is positive, continue
-	movq $45, %rcx		# otherwise, print a '-'
+	movq $45, %rcx		# otherwise, print the minus character
 	pushq %rax			
 	call print_char		# save rax, print, restore rax
 	popq %rax
 	negq %rax			# continue with the positive number
-	
-	
-	
 	
 	loop:
 	incq _count 
 	movq $0, %rdx
 	movq $10, %rbx
 	idivq %rbx
-	addq $48, %rdx
-	pushq %rdx			# push the least significant digit as a char
+	addq $48, %rdx		# convert digit to char
+	pushq %rdx			# push the least significant digit (char)
 	cmpq $0, %rax		# loop while !=0
 	jnz loop
 	prloop:
@@ -69,13 +55,6 @@ print_nbr:
 	call print_char		# pop the chars and print them
 	cmpq $0, _count		# until all of them are done
 	jnz prloop
-	incq _idx
-	movq _idx, %rax
-	cmpq _argc, %rax
-	jz return			# return if the last argument is done
-	movq $32, %rcx
-	call print_char		# otherwise print a space and jump to the next argument
-	jmp args
 	return:
 	ret
 print_str:
