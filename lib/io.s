@@ -58,31 +58,14 @@ print_nbr:
 	return:
 	ret
 print_str:
-	movq 8(%rsp), %rax
-	movq %rax, _argc		# get argc
-	addq $2, _argc
-	movq $2, _idx 			# set idx to the first arg
-argsprintstr:
-	movq _idx, %rax
-	cmpq _argc, %rax
-	jz return
-	movq $8, %rax
-	imulq _idx				# compute the offset of the current arg
-	addq %rsp, %rax
-	movq (%rax), %rax		# adress of the length
+	# rax holds the adress of the length
 	movq (%rax), %rdx		# value of the length
 	addq $8, %rax			# the string is stored right after its length
 	movq %rax, %rcx			# pointer to the string
 	movq $4, %rax
 	movq $1, %rbx
 	int  $0x80				# write
-	incq _idx				# increment to go to the next arg 
-	movq _idx, %rax
-	cmpq _argc, %rax
-	jz return				#return if we are done
-	movq $32, %rcx			# print a space & go to the next arg to print
-	call print_char
-	jmp argsprintstr
+	ret
 io.read:
 	movq $8, %rdx
 	mov $_read_buf, %rcx

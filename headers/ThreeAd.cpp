@@ -148,10 +148,8 @@ public:
             
             if(printFn){
                 if(t == Environment::type::STRING){
-                    f   << "\tpushq $"<<token<<endl;
-                    f   << "\tpushq $1"<<endl;
+                    f   << "\tmovq $"<<token<<", %rax"<<endl;
                     f   << "\tcall print_str"<<endl;
-                    f   << "\tpopq %rax"<<endl;
                 }else{
                     f   << "\tmovq "<<token<<", %rax"<<endl;
                     f   << "\tcall print_nbr"<<endl;
