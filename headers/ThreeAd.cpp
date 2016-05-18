@@ -53,7 +53,7 @@ public:
     }
 
     if(op.compare("call")!=0
-      && op.compare("c")!=0
+      && op.compare("assign")!=0
       && op.compare("string")!=0
       && op.compare("param")!=0
       && op.compare("table")!=0
@@ -70,7 +70,7 @@ public:
     if(!result.empty() && !env.exists(result))
         env.add(result, Environment::type::INT, "0");
         
-    if(!op.compare("c")){
+    if(!op.compare("assign")){
         Environment::type type = env.getType(lhs);
         if(type == Environment::type::STRING){
             env.add(result, Environment::type::STRING_PTR, "0");
