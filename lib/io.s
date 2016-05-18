@@ -14,6 +14,8 @@
 .type print_nbr, @function
 .type print_str, @function
 .type io.read, @function
+.type print_nl, @function
+.type print_tab, @function
 
 # Prints the char in %rcx to STDOUT
 print_char:
@@ -143,4 +145,22 @@ io.read:
 	
 	read_end:
 	movq _read_retval, %rax # return
+	ret
+
+print_nl:
+	movq $4, %rax
+	movq $1, %rbx
+	movq $1, %rdx
+	movq $10, _char
+	movq $_char, %rcx
+	int  $0x80
+	ret
+	
+print_tab:
+	movq $4, %rax
+	movq $1, %rbx
+	movq $1, %rdx
+	movq $9, _char
+	movq $_char, %rcx
+	int  $0x80
 	ret

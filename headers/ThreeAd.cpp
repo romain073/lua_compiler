@@ -123,6 +123,14 @@ public:
         
         int argc=0;
         Environment::type t = Environment::type::INT;
+        
+        bool printFn = lhs.compare("print") ==0 || lhs.compare("io.write") == 0;
+        bool print;
+        if(printFn){
+            print = lhs.compare("print") ==0;
+        }
+        
+        
         while(getline(ss, token, ',')) { // For each arg
             t = env.getType(token);
             
@@ -138,6 +146,32 @@ public:
             if(!t){
                 t = Environment::type::INT;
             } 
+            
+            if(printFn){
+                
+                
+                if(t == Environment::type::STRING){
+                    f   << "\tpushq $"<<token<<endl;
+                    f   << "\tpushq $1"<<endl;
+                    f   << "\tcall print_str"<<endl;
+                    f   << "\tpopq %rax"<<endl;
+                    
+                }else{
+                    f   << "\tpushq "<<token<<endl;
+                    f   << "\tpushq $1"<<endl;
+                    f   << "\tcall print_nbr"<<endl;
+                    f   << "\tpopq %rax"<<endl;
+                }
+                
+                if(print){
+                    f   << "\tcall print_tab"<<endl;
+                }
+                
+                continue;
+            }
+            
+            
+            
             // Push argv & increment argc
             if(t == Environment::type::STRING){
                 t=Environment::type::STRING_PTR;
@@ -146,6 +180,14 @@ public:
                 f   << "\tpushq "<<token<<endl;
             }
             argc++; 
+        }
+        
+        
+        if(printFn){
+            if(print){
+                f   << "\tcall print_nl"<<endl;
+            }
+            return false; // call has already been done
         }
         
         // Push argc
@@ -189,13 +231,6 @@ public:
         f<< "\tsubq\t%rax,\t%rbx"<<endl;
         f<<"\tjs";
         return true;
-    } else if (!op.compare("print_nl")){
-        f   << "\tmovq $4, %rax"<<endl
-            << "\tmovq $1, %rbx" << endl
-            << "\tmovq $1, %rdx" << endl
-            << "\tmovq $10, _char" << endl
-            << "\tmovq $_char, %rcx" << endl
-            << "\tint  $0x80" << endl;
     } else if (!op.compare("string")){
         env.add(result, Environment::type::STRING, lhs);
         return false;

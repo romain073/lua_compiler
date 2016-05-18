@@ -47,6 +47,6 @@ function fibonacci(n)
 end
 
 for n = 1, 16 do
-    print(fibonacci(n))
+    io.write(fibonacci(n), ", ")
 end
 io.write("...\n")
