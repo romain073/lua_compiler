@@ -20,17 +20,14 @@ public:
     }
     
     void emitPass(map<Expression*,string> &naming, BBlock** out){
-        string fnname = ((Variable*)this->name)->name;
-        
         string names;
         for(auto arg : args){
-            string name = arg->convert(out);
-            names+=name+",";
+            names+=arg->convert(out)+",";
         }
         names.pop_back(); // strip last comma
         
         // add the call
-        (*out)->instructions.push_back(ThreeAd(naming[this], "call", fnname, "("+names+")"));
+        (*out)->instructions.push_back(ThreeAd(naming[this], "call", ((Variable*)this->name)->name, "("+names+")"));
     }
 };
 
