@@ -1,0 +1,1 @@
+make && ./compiler testauto.lua && diff <(lua testauto.lua) <(./target)
