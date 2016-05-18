@@ -8,7 +8,7 @@ class Variable: public Expression
 public:
     string name;
       Variable(string t) 
-    : Expression(NULL, NULL), name(t){
+    : name(t){
       type = Expression::types::VARIABLE;
     }
 

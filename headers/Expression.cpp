@@ -11,14 +11,9 @@ using namespace std;
 class Expression
 {
 public:
-  enum types {UNDEFINED, BINOP, CONSTANT, VARIABLE, FUNCTIONCALL, STRING, UNOP, TABLE, TABLEACCESS};
+  enum types {UNDEFINED, BINOP, CONSTANT, VARIABLE, FUNCTIONCALL, STRING, UNOP, TABLE, TABLEACCESS, COMPARISON};
   types type;
-  class Expression *left, *right;
   static int nameCounter;
-  Expression(Expression *l, Expression *r) 
-    : left(l), right(r){
-      type = UNDEFINED;
-    }
 
   static string newName()
   {

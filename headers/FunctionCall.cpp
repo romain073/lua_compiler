@@ -10,8 +10,9 @@ class FunctionCall: public Expression
 {
 public:
     vector<Expression*> args;
+    Expression* name;
       FunctionCall(Expression *name, vector<Expression*> args) 
-    : Expression(name, NULL), args(args){
+    : args(args), name(name){
       type = Expression::types::FUNCTIONCALL;
     }
     
@@ -20,7 +21,7 @@ public:
     }
     
     void emitPass(map<Expression*,string> &naming, BBlock** out){
-        string fnname = ((Variable*)this->left)->name;
+        string fnname = ((Variable*)this->name)->name;
         
         string names;
         for(auto arg : args){

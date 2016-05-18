@@ -9,7 +9,7 @@ public:
     Expression* arr;
     Expression* idx;
       TableAccess(Expression* arr, Expression* idx) 
-    : Expression(NULL, NULL), arr(arr), idx(idx){
+    : arr(arr), idx(idx){
       type = Expression::types::TABLEACCESS;
     }
 

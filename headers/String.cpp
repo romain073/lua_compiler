@@ -9,7 +9,7 @@ class String: public Expression
 public:
     string string_val;
       String(string t) 
-    : Expression(NULL, NULL), string_val(t){
+    : string_val(t){
       type = Expression::types::STRING;
     }
 

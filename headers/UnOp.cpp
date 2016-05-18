@@ -7,20 +7,21 @@ class UnOp: public Expression
 {
 public:
     string op;
+    Expression *operand;
       UnOp(Expression *l, string t) 
-    : Expression(l, NULL), op(t){
+    : op(t), operand(l){
       type = Expression::types::UNOP;
     }
 
   void namePass(map<Expression*,string> &naming){
         naming[this] = newName();
-        this->left->namePass(naming);
+        this->operand->namePass(naming);
     }
     
  void emitPass(map<Expression*,string> &naming, BBlock** out){
-    this->left->emitPass(naming, out);
+    this->operand->emitPass(naming, out);
 
-    ThreeAd a(naming[this], op, naming[this->left], "");
+    ThreeAd a(naming[this], op, naming[this->operand], "");
     (*out)->instructions.push_back(a);
   }
 };

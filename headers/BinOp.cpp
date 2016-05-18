@@ -6,10 +6,11 @@ using namespace std;
 class BinOp: public Expression
 {
 public:
-        string op;
+    string op;
+    
+    Expression *left, *right;
       BinOp(Expression *l, Expression *r, string t) 
-    : Expression(l, r), op(t){
-        
+    : op(t), left(l), right(r){
       type = Expression::types::BINOP;
     }
 
