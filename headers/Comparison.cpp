@@ -14,7 +14,6 @@ string op;
 Expression *left, *right;
       Comparison(Expression *l, Expression *r, string t) 
     : op(t), left(l), right(r){
-        type = Expression::types::COMPARISON;
     }
 
   void namePass(map<Expression*,string> &naming){

@@ -10,7 +10,6 @@ public:
     Expression *operand;
       UnOp(Expression *l, string t) 
     : op(t), operand(l){
-      type = Expression::types::UNOP;
     }
 
   void namePass(map<Expression*,string> &naming){

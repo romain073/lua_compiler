@@ -10,7 +10,6 @@ public:
     Expression* idx;
       TableAccess(Expression* arr, Expression* idx) 
     : arr(arr), idx(idx){
-      type = Expression::types::TABLEACCESS;
     }
 
     void namePass(map<Expression*,string> &naming){

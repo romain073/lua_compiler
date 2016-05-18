@@ -9,7 +9,6 @@ public:
     string string_val;
       Constant(string t) 
     : string_val(t){
-      type = Expression::types::CONSTANT;
     }
 
     void namePass(map<Expression*,string> &naming){

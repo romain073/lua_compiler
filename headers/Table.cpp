@@ -10,7 +10,6 @@ class Table: public Expression
 public:
     string table_val;
       Table(vector<Expression*> t) {
-      type = Expression::types::TABLE;
       for(auto i: t){
         table_val+=((Constant*)i)->string_val + ",";
       }

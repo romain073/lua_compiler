@@ -9,7 +9,6 @@ public:
     string name;
       Variable(string t) 
     : name(t){
-      type = Expression::types::VARIABLE;
     }
 
     void namePass(map<Expression*,string> &naming){

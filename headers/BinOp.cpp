@@ -11,7 +11,6 @@ public:
     Expression *left, *right;
       BinOp(Expression *l, Expression *r, string t) 
     : op(t), left(l), right(r){
-      type = Expression::types::BINOP;
     }
 
   void namePass(map<Expression*,string> &naming){

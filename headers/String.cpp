@@ -10,7 +10,6 @@ public:
     string string_val;
       String(string t) 
     : string_val(t){
-      type = Expression::types::STRING;
     }
 
     void namePass(map<Expression*,string> &naming){

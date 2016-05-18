@@ -11,8 +11,6 @@ using namespace std;
 class Expression
 {
 public:
-  enum types {UNDEFINED, BINOP, CONSTANT, VARIABLE, FUNCTIONCALL, STRING, UNOP, TABLE, TABLEACCESS, COMPARISON};
-  types type;
   static int nameCounter;
 
   static string newName()

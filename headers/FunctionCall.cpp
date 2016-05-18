@@ -13,7 +13,6 @@ public:
     Expression* name;
       FunctionCall(Expression *name, vector<Expression*> args) 
     : args(args), name(name){
-      type = Expression::types::FUNCTIONCALL;
     }
     
     void namePass(map<Expression*,string> &naming){
