@@ -11,19 +11,15 @@ using namespace std;
 class Expression
 {
 public:
-  enum types {EXPRESSION, BINOP, CONSTANT, VARIABLE, FUNCTIONCALL, STRING, UNOP, TABLE, TABLEACCESS};
+  enum types {UNDEFINED, BINOP, CONSTANT, VARIABLE, FUNCTIONCALL, STRING, UNOP, TABLE, TABLEACCESS};
   types type;
   class Expression *left, *right;
   static int nameCounter;
   Expression(Expression *l, Expression *r) 
     : left(l), right(r){
-      type = EXPRESSION;
+      type = UNDEFINED;
     }
 
-  virtual bool isLeaf(){
-    return left == NULL && right == NULL;
-  }
-  
   static string newName()
   {
     stringstream result;
@@ -31,14 +27,9 @@ public:
     return result.str();
   }
   
-  virtual void namePass(map<Expression*,string> &naming){
-    cout << "undefined namepass";
-  }
+  virtual void namePass(map<Expression*,string> &naming) = 0;
   
-  virtual void emitPass(map<Expression*,string> &naming, BBlock** out){
-    
-    cout << "undefined emit";
-  }
+  virtual void emitPass(map<Expression*,string> &naming, BBlock** out) = 0;
   
   string convert(BBlock** out){
     map<Expression*,string> naming;
@@ -46,10 +37,6 @@ public:
     this->emitPass(naming, out);
     
     return naming[this];
-  }
-  
-  bool memberOf(types t){
-    return type == t;
   }
 };
 

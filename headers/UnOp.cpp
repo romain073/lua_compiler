@@ -6,7 +6,7 @@ using namespace std;
 class UnOp: public Expression
 {
 public:
-string op;
+    string op;
       UnOp(Expression *l, string t) 
     : Expression(l, NULL), op(t){
       type = Expression::types::UNOP;
@@ -18,10 +18,8 @@ string op;
     }
     
  void emitPass(map<Expression*,string> &naming, BBlock** out){
-    if (!this->left->isLeaf()) 
-        this->left->emitPass(naming, out);
+    this->left->emitPass(naming, out);
 
-     
     ThreeAd a(naming[this], op, naming[this->left], "");
     (*out)->instructions.push_back(a);
   }

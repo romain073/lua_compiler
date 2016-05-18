@@ -20,12 +20,9 @@ public:
     }
     
  void emitPass(map<Expression*,string> &naming, BBlock** out){
-    if (!this->left->isLeaf()) 
-        this->left->emitPass(naming, out);
-    if (!this->right->isLeaf()) 
-        this->right->emitPass(naming, out);
+    this->left->emitPass(naming, out);
+    this->right->emitPass(naming, out);
 
-     
     ThreeAd a(naming[this], op, naming[this->left], naming[this->right]);
     (*out)->instructions.push_back(a);
   }
