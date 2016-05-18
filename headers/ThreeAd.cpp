@@ -130,7 +130,7 @@ public:
             print = lhs.compare("print") ==0;
         }
         
-        
+        bool firstArg = true;
         while(getline(ss, token, ',')) { // For each arg
             t = env.getType(token);
             
@@ -147,6 +147,9 @@ public:
             } 
             
             if(printFn){
+                if(print && !firstArg){
+                    f   << "\tcall print_tab"<<endl;
+                }
                 if(t == Environment::type::STRING){
                     f   << "\tmovq $"<<token<<", %rax"<<endl;
                     f   << "\tcall print_str"<<endl;
@@ -154,9 +157,7 @@ public:
                     f   << "\tmovq "<<token<<", %rax"<<endl;
                     f   << "\tcall print_nbr"<<endl;
                 }
-                if(print){
-                    f   << "\tcall print_tab"<<endl;
-                }
+                firstArg = false;
                 continue;
             }
             // Push argv & increment argc
