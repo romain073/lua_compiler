@@ -2,6 +2,22 @@ str = "123"
 print(str)
 arr = {1,2,3,4}
 print(#arr, arr[1])
+
+var = 45
+while var <=50 do
+  print(50-var)
+  
+  for variable=1,50 do
+    print(variable)
+  end
+  
+  var = var+1
+end
+
+
+
+
+
 print(13+(22-11)/1*44)
 x = 7
 y = (10+x)*2
