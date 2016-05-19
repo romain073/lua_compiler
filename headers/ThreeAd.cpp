@@ -26,7 +26,6 @@ public:
   
   // Returns true if the last instruction is the beginning of a jump
   bool assembly(ofstream &f, Environment &env){
-    //cout << "'"<<op<<"'"<<endl;
     f<< endl<<"\t #" << result << " := " << lhs << " " 
          << op << " " << rhs << endl;
     if(op.compare("call")!=0
@@ -72,10 +71,10 @@ public:
         
     if(!op.compare("assign")){
         Environment::type type = env.getType(lhs);
-        if(type == Environment::type::STRING){
+        if(type == Environment::type::STRING){ // Create a string pointer
             env.add(result, Environment::type::STRING_PTR, "0");
             f<< "\tmovq\t$"<<lhs<<",\t%rax"<<endl;
-        } else if(type == Environment::type::ARRAY){
+        } else if(type == Environment::type::ARRAY){ // Create an array pointer
             env.add(result, Environment::type::ARRAY_PTR, "0");
             f<< "\tmovq\t$"<<lhs<<",\t%rax"<<endl;
         } else {
@@ -92,28 +91,26 @@ public:
     } else if (!op.compare("+")){
         f<< "\taddq\t%rbx,\t%rax"<<endl;
     } else if (!op.compare("param")){
-        
         env.addParam(lhs);
-        
     } else if (!op.compare("-")){
         if(rhs.empty())
-            f<< "\tnegq\t%rax"<<endl;
+            f<< "\tnegq\t%rax"<<endl; // Unary
         else
-            f<< "\tsubq\t%rbx,\t%rax"<<endl;
+            f<< "\tsubq\t%rbx,\t%rax"<<endl; // Binary
     } else if (!op.compare("*")){
-        f<< "\timulq\t%rbx,\t%rax"<<endl;
+        f   << "\timulq\t%rbx,\t%rax"<<endl;
     } else if (!op.compare("/")){
-        f << "\tcqto"<<endl;
-        f<< "\tidivq\t%rbx"<<endl;
+        f   << "\tcqto"<<endl
+            << "\tidivq\t%rbx"<<endl;
     } else if (!op.compare("%")){
-        f << "\tcqto"<<endl;
-        f<< "\tidivq\t%rbx"<<endl;
-        f<< "\tmovq\t%rdx,\t%rax"<<endl;
+        f   << "\tcqto"<<endl
+            << "\tidivq\t%rbx"<<endl
+            << "\tmovq\t%rdx,\t%rax"<<endl; // put mod result in %rax
     } else if (!op.compare("#")){
-        f << "\tmovq\t(%rax), %rax"<<endl;
+        f   << "\tmovq\t(%rax), %rax"<<endl;
     } else if (!op.compare("tableaccess")){
-        f << "\timulq $8, %rbx" << endl
-        << "\taddq %rbx, %rax" << endl;
+        f   << "\timulq $8, %rbx" << endl // Compute the offset
+            << "\taddq %rbx, %rax" << endl; // Move the pointer
         env.add(result, Environment::type::CELL_PTR, "0");
     } else if (!op.compare("call")){
         string args = rhs.substr(1, rhs.length()-2); // args separated by commas
@@ -132,9 +129,9 @@ public:
             t = env.getType(token);
             
             if(t == Environment::type::CELL_PTR){
-              f<< "\tmovq\t"<<token<<",\t%rax"<<endl; // Dereference, we want the value of rhs
-              f<< "\tmovq\t(%rax),\t%rax"<<endl;
-              f<< "\tmovq\t%rax,\t"<<token<<endl;
+              f << "\tmovq\t"<<token<<",\t%rax"<<endl // Dereference, we want the value of rhs
+                << "\tmovq\t(%rax),\t%rax"<<endl
+                << "\tmovq\t%rax,\t"<<token<<endl;
               env.add(token, Environment::type::INT, "0");
             }
                     
@@ -154,8 +151,8 @@ public:
                         f   << "\tmovq "<<token<<", %rax"<<endl;
                     f   << "\tcall print_str"<<endl;
                 }else{
-                    f   << "\tmovq "<<token<<", %rax"<<endl;
-                    f   << "\tcall print_nbr"<<endl;
+                    f   << "\tmovq "<<token<<", %rax"<<endl
+                        << "\tcall print_nbr"<<endl;
                 }
                 firstArg = false;
                 continue;
@@ -195,28 +192,28 @@ public:
 
         
     } else if (!op.compare("EQ")){
-        f<< "\tsubq\t%rbx,\t%rax"<<endl;
-        f<<"\tjz";
+        f   << "\tsubq\t%rbx,\t%rax"<<endl
+            <<"\tjz";
         return true;
     } else if (!op.compare("NE")){
-        f<< "\tsubq\t%rbx,\t%rax"<<endl;
-        f<<"\tjnz";
+        f   << "\tsubq\t%rbx,\t%rax"<<endl
+            <<"\tjnz";
         return true;
     } else if (!op.compare("LT")){
-        f<< "\tsubq\t%rbx,\t%rax"<<endl;
-        f<<"\tjs";
+        f   << "\tsubq\t%rbx,\t%rax"<<endl
+            <<"\tjs";
         return true;
     } else if (!op.compare("LE")){
-        f<< "\tsubq\t%rax,\t%rbx"<<endl;
-        f<<"\tjns";
+        f   << "\tsubq\t%rax,\t%rbx"<<endl
+            <<"\tjns";
         return true;
     } else if (!op.compare("GE")){
-        f<< "\tsubq\t%rbx,\t%rax"<<endl;
-        f<<"\tjns";
+        f   << "\tsubq\t%rbx,\t%rax"<<endl
+            <<"\tjns";
         return true;
     } else if (!op.compare("GT")){
-        f<< "\tsubq\t%rax,\t%rbx"<<endl;
-        f<<"\tjs";
+        f   << "\tsubq\t%rax,\t%rbx"<<endl
+            <<"\tjs";
         return true;
     } else if (!op.compare("string")){
         env.add(result, Environment::type::STRING, lhs);
