@@ -125,10 +125,7 @@ public:
         Environment::type t = Environment::type::INT;
         
         bool printFn = lhs.compare("print") ==0 || lhs.compare("io.write") == 0;
-        bool print;
-        if(printFn){
-            print = lhs.compare("print") ==0;
-        }
+        bool print = printFn && lhs.compare("print") ==0;
         
         bool firstArg = true;
         while(getline(ss, token, ',')) { // For each arg
