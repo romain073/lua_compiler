@@ -150,8 +150,11 @@ public:
                 if(print && !firstArg){
                     f   << "\tcall print_tab"<<endl;
                 }
-                if(t == Environment::type::STRING){
-                    f   << "\tmovq $"<<token<<", %rax"<<endl;
+                if(t == Environment::type::STRING || t == Environment::type::STRING_PTR){
+                    if(t == Environment::type::STRING)
+                        f   << "\tmovq $"<<token<<", %rax"<<endl;
+                    else
+                        f   << "\tmovq "<<token<<", %rax"<<endl;
                     f   << "\tcall print_str"<<endl;
                 }else{
                     f   << "\tmovq "<<token<<", %rax"<<endl;

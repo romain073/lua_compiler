@@ -31,7 +31,7 @@ class Assign: public Statement
             for(size_t i = 0; i<this->variables.size(); i++){
                 string tmp_name = tmp[i];
                 string name = this->variables[i]->convert(current);
-                ThreeAd a(name, "assign", tmp_name, tmp_name);
+                ThreeAd a(name, "assign", tmp_name, "");
                 (*current)->instructions.push_back(a);
             }
         }
