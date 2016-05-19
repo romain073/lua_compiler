@@ -6,11 +6,11 @@ using namespace std;
 class BinOp: public Expression
 {
 public:
-        string op;
+    string op;
+    
+    Expression *left, *right;
       BinOp(Expression *l, Expression *r, string t) 
-    : Expression(l, r), op(t){
-        
-      type = Expression::types::BINOP;
+    : op(t), left(l), right(r){
     }
 
   void namePass(map<Expression*,string> &naming){
@@ -20,12 +20,9 @@ public:
     }
     
  void emitPass(map<Expression*,string> &naming, BBlock** out){
-    if (!this->left->isLeaf()) 
-        this->left->emitPass(naming, out);
-    if (!this->right->isLeaf()) 
-        this->right->emitPass(naming, out);
+    this->left->emitPass(naming, out);
+    this->right->emitPass(naming, out);
 
-     
     ThreeAd a(naming[this], op, naming[this->left], naming[this->right]);
     (*out)->instructions.push_back(a);
   }

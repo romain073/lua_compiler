@@ -11,8 +11,10 @@ class Comparison: public Expression
 public:
 
 string op;
+Expression *left, *right;
       Comparison(Expression *l, Expression *r, string t) 
-    : Expression(l, r), op(t){}
+    : op(t), left(l), right(r){
+    }
 
   void namePass(map<Expression*,string> &naming){
         naming[this] = newName();

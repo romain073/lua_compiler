@@ -5,6 +5,7 @@
 class Sequence: public Statement
 {
     public:
+    vector<Statement*> children;
     Sequence(){
     }
     

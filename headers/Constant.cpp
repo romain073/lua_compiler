@@ -8,8 +8,7 @@ class Constant: public Expression
 public:
     string string_val;
       Constant(string t) 
-    : Expression(NULL, NULL), string_val(t){
-      type = Expression::types::CONSTANT;
+    : string_val(t){
     }
 
     void namePass(map<Expression*,string> &naming){

@@ -1,10 +1,14 @@
+str = "123"
+print(str)
+arr = {1,2,3,4}
+print(#arr, arr[1])
 print(13+(22-11)/1*44)
 x = 7
 y = (10+x)*2
 z = y - x
 print(z)
 print "enter a number:"
-n = io.read("*number")
+n = 10
 factorial = 1
 x=1
 for i = 2,n do
@@ -15,7 +19,7 @@ io.write(n)
 io.write(" is ")
 print(x)
 print "enter a number:"
-n = io.read("*number")
+n = 10000
 for i = 2,n do
   if n%i==0 then
     io.write(i)

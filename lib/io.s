@@ -14,6 +14,8 @@
 .type print_nbr, @function
 .type print_str, @function
 .type io.read, @function
+.type print_nl, @function
+.type print_tab, @function
 
 # Prints the char in %rcx to STDOUT
 print_char:
@@ -25,40 +27,26 @@ print_char:
 	int  $0x80
 	ret
 	
-# Prints a sequence of number
+# Prints a number
 print_nbr:
-	movq 8(%rsp), %rax
-	movq %rax, _argc	# get argc
-	addq $2, _argc	
-	movq $2, _idx		# get the first argument
-	args:
-	movq _idx, %rax
-	cmpq _argc, %rax	# Return if done
-	jz return
-	movq $8, %rax
-	imulq _idx 
-	addq %rsp, %rax 
-	movq (%rax), %rax	# get the value of the first argument 
+	# rax holds the value of the argument 
 	movq $0, _count 	# initialize a char counter
 	
 	cmpq $0, %rax
 	jge loop			# if %rax is positive, continue
-	movq $45, %rcx		# otherwise, print a '-'
+	movq $45, %rcx		# otherwise, print the minus character
 	pushq %rax			
 	call print_char		# save rax, print, restore rax
 	popq %rax
 	negq %rax			# continue with the positive number
-	
-	
-	
 	
 	loop:
 	incq _count 
 	movq $0, %rdx
 	movq $10, %rbx
 	idivq %rbx
-	addq $48, %rdx
-	pushq %rdx			# push the least significant digit as a char
+	addq $48, %rdx		# convert digit to char
+	pushq %rdx			# push the least significant digit (char)
 	cmpq $0, %rax		# loop while !=0
 	jnz loop
 	prloop:
@@ -67,41 +55,17 @@ print_nbr:
 	call print_char		# pop the chars and print them
 	cmpq $0, _count		# until all of them are done
 	jnz prloop
-	incq _idx
-	movq _idx, %rax
-	cmpq _argc, %rax
-	jz return			# return if the last argument is done
-	movq $32, %rcx
-	call print_char		# otherwise print a space and jump to the next argument
-	jmp args
 	return:
 	ret
 print_str:
-	movq 8(%rsp), %rax
-	movq %rax, _argc		# get argc
-	addq $2, _argc
-	movq $2, _idx 			# set idx to the first arg
-argsprintstr:
-	movq _idx, %rax
-	cmpq _argc, %rax
-	jz return
-	movq $8, %rax
-	imulq _idx				# compute the offset of the current arg
-	addq %rsp, %rax
-	movq (%rax), %rax		# adress of the length
+	# rax holds the adress of the length
 	movq (%rax), %rdx		# value of the length
 	addq $8, %rax			# the string is stored right after its length
 	movq %rax, %rcx			# pointer to the string
 	movq $4, %rax
 	movq $1, %rbx
 	int  $0x80				# write
-	incq _idx				# increment to go to the next arg 
-	movq _idx, %rax
-	cmpq _argc, %rax
-	jz return				#return if we are done
-	movq $32, %rcx			# print a space & go to the next arg to print
-	call print_char
-	jmp argsprintstr
+	ret
 io.read:
 	movq $8, %rdx
 	mov $_read_buf, %rcx
@@ -143,4 +107,22 @@ io.read:
 	
 	read_end:
 	movq _read_retval, %rax # return
+	ret
+
+print_nl:
+	movq $4, %rax
+	movq $1, %rbx
+	movq $1, %rdx
+	movq $10, _char
+	movq $_char, %rcx
+	int  $0x80
+	ret
+	
+print_tab:
+	movq $4, %rax
+	movq $1, %rbx
+	movq $1, %rdx
+	movq $9, _char
+	movq $_char, %rcx
+	int  $0x80
 	ret

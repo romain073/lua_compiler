@@ -53,7 +53,7 @@ public:
     }
 
     if(op.compare("call")!=0
-      && op.compare("c")!=0
+      && op.compare("assign")!=0
       && op.compare("string")!=0
       && op.compare("param")!=0
       && op.compare("table")!=0
@@ -70,7 +70,7 @@ public:
     if(!result.empty() && !env.exists(result))
         env.add(result, Environment::type::INT, "0");
         
-    if(!op.compare("c")){
+    if(!op.compare("assign")){
         Environment::type type = env.getType(lhs);
         if(type == Environment::type::STRING){
             env.add(result, Environment::type::STRING_PTR, "0");
@@ -123,6 +123,11 @@ public:
         
         int argc=0;
         Environment::type t = Environment::type::INT;
+        
+        bool printFn = lhs.compare("print") ==0 || lhs.compare("io.write") == 0;
+        bool print = printFn && lhs.compare("print") ==0;
+        
+        bool firstArg = true;
         while(getline(ss, token, ',')) { // For each arg
             t = env.getType(token);
             
@@ -133,11 +138,28 @@ public:
               env.add(token, Environment::type::INT, "0");
             }
                     
-            
             env.fntranslate(token, f);
             if(!t){
                 t = Environment::type::INT;
             } 
+            
+            if(printFn){
+                if(print && !firstArg){
+                    f   << "\tcall print_tab"<<endl;
+                }
+                if(t == Environment::type::STRING || t == Environment::type::STRING_PTR){
+                    if(t == Environment::type::STRING)
+                        f   << "\tmovq $"<<token<<", %rax"<<endl;
+                    else
+                        f   << "\tmovq "<<token<<", %rax"<<endl;
+                    f   << "\tcall print_str"<<endl;
+                }else{
+                    f   << "\tmovq "<<token<<", %rax"<<endl;
+                    f   << "\tcall print_nbr"<<endl;
+                }
+                firstArg = false;
+                continue;
+            }
             // Push argv & increment argc
             if(t == Environment::type::STRING){
                 t=Environment::type::STRING_PTR;
@@ -146,6 +168,13 @@ public:
                 f   << "\tpushq "<<token<<endl;
             }
             argc++; 
+        }
+        
+        if(printFn){
+            if(print){
+                f   << "\tcall print_nl"<<endl;
+            }
+            return false; // call has already been done
         }
         
         // Push argc
@@ -189,13 +218,6 @@ public:
         f<< "\tsubq\t%rax,\t%rbx"<<endl;
         f<<"\tjs";
         return true;
-    } else if (!op.compare("print_nl")){
-        f   << "\tmovq $4, %rax"<<endl
-            << "\tmovq $1, %rbx" << endl
-            << "\tmovq $1, %rdx" << endl
-            << "\tmovq $10, _char" << endl
-            << "\tmovq $_char, %rcx" << endl
-            << "\tint  $0x80" << endl;
     } else if (!op.compare("string")){
         env.add(result, Environment::type::STRING, lhs);
         return false;

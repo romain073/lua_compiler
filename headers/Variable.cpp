@@ -8,8 +8,7 @@ class Variable: public Expression
 public:
     string name;
       Variable(string t) 
-    : Expression(NULL, NULL), name(t){
-      type = Expression::types::VARIABLE;
+    : name(t){
     }
 
     void namePass(map<Expression*,string> &naming){

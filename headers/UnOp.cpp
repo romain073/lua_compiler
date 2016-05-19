@@ -6,23 +6,21 @@ using namespace std;
 class UnOp: public Expression
 {
 public:
-string op;
+    string op;
+    Expression *operand;
       UnOp(Expression *l, string t) 
-    : Expression(l, NULL), op(t){
-      type = Expression::types::UNOP;
+    : op(t), operand(l){
     }
 
   void namePass(map<Expression*,string> &naming){
         naming[this] = newName();
-        this->left->namePass(naming);
+        this->operand->namePass(naming);
     }
     
  void emitPass(map<Expression*,string> &naming, BBlock** out){
-    if (!this->left->isLeaf()) 
-        this->left->emitPass(naming, out);
+    this->operand->emitPass(naming, out);
 
-     
-    ThreeAd a(naming[this], op, naming[this->left], "");
+    ThreeAd a(naming[this], op, naming[this->operand], "");
     (*out)->instructions.push_back(a);
   }
 };
