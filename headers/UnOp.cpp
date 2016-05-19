@@ -11,6 +11,10 @@ public:
       UnOp(Expression *l, string t) 
     : op(t), operand(l){
     }
+    
+    ~UnOp(){
+      delete operand;
+    }
 
   void namePass(map<Expression*,string> &naming){
         naming[this] = newName();

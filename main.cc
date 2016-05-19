@@ -107,7 +107,12 @@ int main(int argc, char **argv)
       cout << "An error has occured during '"<<asm_link<<"'" << endl;
       return 1;
     }
-    // TODO clean parse tree & graphs
+    
+    start->free();
+    for(auto i : functiondefs){
+      i->free();
+    }
+    delete root;
     return 0;
   }
   return 1;

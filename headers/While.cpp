@@ -11,9 +11,12 @@ class While: public Statement
     Sequence* instructions;
     While(Expression* condition, Sequence* instructions):
         condition(condition), instructions(instructions)
-    {
-    }
+    { }
     
+    ~While(){
+        delete condition;
+        delete instructions;
+    }
     
     void convert(BBlock** current, list<BBlock*> &functions){
         condition->convert(current);

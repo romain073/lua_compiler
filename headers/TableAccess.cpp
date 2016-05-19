@@ -11,6 +11,11 @@ public:
       TableAccess(Expression* arr, Expression* idx) 
     : arr(arr), idx(idx){
     }
+    
+    ~TableAccess(){
+      delete arr;
+      delete idx;
+    }
 
     void namePass(map<Expression*,string> &naming){
         arr->namePass(naming);

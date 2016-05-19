@@ -12,6 +12,7 @@ public:
       Table(vector<Expression*> t) {
       for(auto i: t){
         table_val+=((Constant*)i)->string_val + ",";
+        delete i;
       }
       table_val.pop_back();// remove trailing comma
     }

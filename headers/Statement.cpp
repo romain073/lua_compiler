@@ -9,6 +9,7 @@ class Statement
 {
   public:
     virtual void convert(BBlock** current, list<BBlock*> &functions) = 0;
+    virtual ~Statement(){};
 };
 
 #endif

@@ -10,6 +10,13 @@ class Assign: public Statement
     vector<Expression*> values;
     Assign(vector<Expression*> var, vector<Expression*> val): variables(var), values(val){ }
     
+    ~Assign(){
+        for(auto i: variables)
+            delete i;
+        for(auto i:values)
+            delete i;
+    }
+    
     void convert(BBlock** current, list<BBlock*> &functions){
         if(this->variables.size()==1){
             // var = value

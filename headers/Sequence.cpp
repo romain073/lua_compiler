@@ -9,6 +9,12 @@ class Sequence: public Statement
     Sequence(){
     }
     
+    ~Sequence(){
+        for(auto s : this->children){
+            delete s;
+        }
+    }
+    
     Sequence* add(Statement* s){
         this->children.push_back(s);
         return this;

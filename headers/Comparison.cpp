@@ -15,6 +15,10 @@ Expression *left, *right;
       Comparison(Expression *l, Expression *r, string t) 
     : op(t), left(l), right(r){
     }
+    ~Comparison(){
+        delete left;
+        delete right;
+    }
 
   void namePass(map<Expression*,string> &naming){
         naming[this] = newName();

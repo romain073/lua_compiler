@@ -8,6 +8,11 @@ class Return: public Statement
     vector<Expression*> e;
     Return(vector<Expression*> e) :e(e) {}
     
+    ~Return(){
+        for(auto i: e)
+            delete i;
+    }
+    
     void convert(BBlock** current, list<BBlock*> &functions){
         string name;
         for(auto i:e)

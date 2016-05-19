@@ -16,6 +16,17 @@ class If: public Statement
     {
     }
     
+    ~If(){
+        delete condition;
+        delete seq_true;
+        delete seq_false;
+        
+        for(auto i: elsifs){
+            delete i.first;
+            delete i.second;
+        }
+    }
+    
     void convert(BBlock** current, list<BBlock*> &functions){
         condition->convert(current);
         

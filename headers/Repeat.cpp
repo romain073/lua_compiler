@@ -14,6 +14,11 @@ class Repeat: public Statement
     {
     }
     
+    ~Repeat(){
+        delete condition;
+        delete instructions;
+    }
+    
     void convert(BBlock** current, list<BBlock*> &functions){
         
         BBlock* back = new BBlock();

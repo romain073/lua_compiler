@@ -63,7 +63,6 @@ static int blockCounter;
   todo.insert(this);
   while(todo.size()>0)
   {
-    // Pop an arbitrary element from todo set
     auto first = todo.begin();
     BBlock *next = *first;
     todo.erase(first);
@@ -121,7 +120,6 @@ static int blockCounter;
     
     while(todo.size()>0)
     {
-      // Pop an arbitrary element from todo set
       auto first = todo.begin();
       BBlock *next = *first;
       todo.erase(first);
@@ -139,6 +137,23 @@ static int blockCounter;
     }
   }
   
+  void free(){
+    set<BBlock *> done, todo;
+    todo.insert(this);
+    
+    while(todo.size()>0)
+    {
+      auto first = todo.begin();
+      BBlock *next = *first;
+      todo.erase(first);
+      done.insert(next);
+      if(next->trueExit!=NULL && done.find(next->trueExit)==done.end())
+        todo.insert(next->trueExit);
+      if(next->falseExit!=NULL && done.find(next->falseExit)==done.end())
+        todo.insert(next->falseExit);
+      delete next;
+    }
+  }
   
 };
 #endif

@@ -9,6 +9,10 @@ class Call: public Statement
     Expression* exp;
     Call(Expression* exp): exp(exp){ }
     
+    ~Call(){
+        delete exp;
+    }
+    
     void convert(BBlock** current, list<BBlock*> &functions){
         this->exp->convert(current);
     }
