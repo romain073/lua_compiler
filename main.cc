@@ -34,8 +34,6 @@ int main(int argc, char **argv)
   }
   
   if(!parser.parse()){
-    //root->dump();
-    
     BBlock *start = new BBlock();
     BBlock *current = start;
     
@@ -98,7 +96,6 @@ int main(int argc, char **argv)
         myfile <<"\t"<< name <<":\t.quad "<< size <<endl;
         myfile <<"\t"<< name <<"_a:\t.quad "<< value <<endl;
       }
-      //cout << name << type << value;
     }
     
     myfile.close();
@@ -106,7 +103,7 @@ int main(int argc, char **argv)
     string asm_link = "as target.s -o target.o && ld target.o -o target";
     
     cout << asm_link <<endl;
-    if(system(asm_link.c_str())==-1){
+    if(system(asm_link.c_str())!=0){
       cout << "An error has occured during '"<<asm_link<<"'" << endl;
       return 1;
     }
