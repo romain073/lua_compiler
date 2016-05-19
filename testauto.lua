@@ -15,6 +15,34 @@ while var <=50 do
 end
 
 
+for i =0,10 do
+  if i < 3 then print(i, 3)
+  elseif i< 6 then print(i, 6)
+  elseif i< 7 then print(i, 7)
+  elseif i< 8 then print(i, 8)
+  elseif i< 9 then print(i, 9)
+  else print(i, 10)
+  end
+end
+for i =0,10 do
+  if i < 3 then print(i, 3)
+  else print(i, 10)
+  end
+end
+for i =0,10 do
+  if i < 3 then print(i, 3)
+  end
+end
+
+
+for i =0,10 do
+  if i < 3 then print(i, 3)
+  elseif i< 6 then print(i, 6)
+  elseif i< 7 then print(i, 7)
+  elseif i< 8 then print(i, 8)
+  elseif i< 9 then print(i, 9)
+  end
+end
 
 
 
