@@ -3,6 +3,15 @@ print(str)
 arr = {1,2,3,4}
 print(#arr, arr[1])
 
+
+function f(a,b,c)
+    print(a,b,c)
+    return a
+end
+
+print(1,2,3)
+print(f(1,2,3))
+
 var = 45
 while var <=50 do
   print(50-var)

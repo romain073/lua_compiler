@@ -118,13 +118,13 @@ public:
         istringstream ss(args);
         string token;
         
-        int argc=0;
         Environment::type t = Environment::type::INT;
         
         bool printFn = lhs.compare("print") ==0 || lhs.compare("io.write") == 0;
         bool print = printFn && lhs.compare("print") ==0;
         
         bool firstArg = true;
+        vector<string> arguments;
         while(getline(ss, token, ',')) { // For each arg
             t = env.getType(token);
             
@@ -157,14 +157,7 @@ public:
                 firstArg = false;
                 continue;
             }
-            // Push argv & increment argc
-            if(t == Environment::type::STRING){
-                t=Environment::type::STRING_PTR;
-                f   << "\tpushq $"<<token<<endl;
-            }else{
-                f   << "\tpushq "<<token<<endl;
-            }
-            argc++; 
+            arguments.push_back(token);
         }
         
         if(printFn){
@@ -173,19 +166,20 @@ public:
             }
             return false; // call has already been done
         }
+        int i;
+        int argc = arguments.size();
+        for(i = argc-1;i>=0;i--){
+            // Push argv
+            f   << "\tpushq "<<arguments[i]<<endl;
+        }
+        
         
         // Push argc
         f<< "\tpushq $"<<to_string(argc)<<endl;
         
-        if(lhs == "print"){
-            if(t == Environment::type::STRING_PTR){
-                f<< "\tcall \tprint_str"<<endl;
-            } else {
-                f<< "\tcall \tprint_nbr"<<endl;
-            }
-        }else {
-            f<< "\tcall \t"<<lhs<<endl;
-        }
+
+        f<< "\tcall \t"<<lhs<<endl;
+        
         
         // Pop argv & argc
         f << "\taddq\t$"<< 8*(argc+1) <<",\t%rsp"<<endl;
