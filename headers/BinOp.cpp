@@ -12,6 +12,10 @@ public:
       BinOp(Expression *l, Expression *r, string t) 
     : op(t), left(l), right(r){
     }
+    ~BinOp(){
+      delete left;
+      delete right;
+    }
 
   void namePass(map<Expression*,string> &naming){
         naming[this] = newName();

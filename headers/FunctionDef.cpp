@@ -13,6 +13,10 @@ class FunctionDef: public Statement
     FunctionDef(string name, list<string> params, Sequence* body): name(name), params(params), body(body)
     { }
     
+    ~FunctionDef(){
+        delete body;
+    }
+    
     void setName(string n){
         name = n;
     }

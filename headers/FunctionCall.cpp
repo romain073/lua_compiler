@@ -15,6 +15,12 @@ public:
     : args(args), name(name){
     }
     
+    ~FunctionCall(){
+        for(auto i: args)
+            delete i;
+        delete name;
+    }
+    
     void namePass(map<Expression*,string> &naming){
         naming[this] = Expression::newName();
     }

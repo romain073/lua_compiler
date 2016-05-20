@@ -2,6 +2,50 @@ str = "123"
 print(str)
 arr = {1,2,3,4}
 print(#arr, arr[1])
+
+var = 45
+while var <=50 do
+  print(50-var)
+  
+  for variable=1,50 do
+    print(variable)
+  end
+  
+  var = var+1
+end
+
+
+for i =0,10 do
+  if i < 3 then print(i, 3)
+  elseif i< 6 then print(i, 6)
+  elseif i< 7 then print(i, 7)
+  elseif i< 8 then print(i, 8)
+  elseif i< 9 then print(i, 9)
+  else print(i, 10)
+  end
+end
+for i =0,10 do
+  if i < 3 then print(i, 3)
+  else print(i, 10)
+  end
+end
+for i =0,10 do
+  if i < 3 then print(i, 3)
+  end
+end
+
+
+for i =0,10 do
+  if i < 3 then print(i, 3)
+  elseif i< 6 then print(i, 6)
+  elseif i< 7 then print(i, 7)
+  elseif i< 8 then print(i, 8)
+  elseif i< 9 then print(i, 9)
+  end
+end
+
+
+
 print(13+(22-11)/1*44)
 x = 7
 y = (10+x)*2

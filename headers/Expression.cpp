@@ -23,6 +23,7 @@ public:
   virtual void namePass(map<Expression*,string> &naming) = 0;
   
   virtual void emitPass(map<Expression*,string> &naming, BBlock** out) = 0;
+  virtual ~Expression(){};
   
   string convert(BBlock** out){
     map<Expression*,string> naming;
